@@ -1,0 +1,47 @@
+﻿@model EditDepartmentDto
+@{
+    ViewData["Title"] = "Edit Department";
+}
+
+<h1>Edit Department</h1>
+
+<div class="mt-5 mb-5">
+    <form asp-action="Edit">
+
+        <div class="form-floating mb-3">
+            <input type="text" asp-for="Id" class="form-control" placeholder="Code"  readonly/>
+            <label asp-for="Id"></label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="text" asp-for="Code" class="form-control" placeholder="Code" />
+            <label asp-for="Code"></label>
+            <div class="my-3">
+                <span class="alert-danger" asp-validation-for="Code"></span>
+            </div>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="text" asp-for="Name" class="form-control" placeholder="Name" />
+            <label asp-for="Name"></label>
+            <div class="my-3">
+                <span class="alert-danger" asp-validation-for="Name"></span>
+            </div>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input asp-for="CreatedAt" class="form-control" placeholder="Creation Date" />
+            <label asp-for="CreatedAt">Creation Date</label>
+            <div class="my-3">
+                <span class="alert-danger" asp-validation-for="CreatedAt"></span>
+            </div>
+        </div>
+
+        <div>
+            <input type="submit" value="Edit" class="btn btn-primary" />
+            <a asp-action="Index" asp-controller="Department" class="btn btn-secondary">Back to List</a>
+        </div>
+  
+    </form>
+</div>
+
