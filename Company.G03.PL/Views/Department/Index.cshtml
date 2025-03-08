@@ -1,0 +1,58 @@
+﻿@model IEnumerable<Department>
+@{
+    ViewData["Title"] = "All Departments";
+}
+
+<h1 class="mt-5">All Departments</h1>
+
+<div class="mt-5 mb-5">
+    <a asp-action="Create" asp-controller"Department" class="btn btn-primary">Create Department</a>
+</div>
+
+@if (Model.Count() > 0)
+    {
+    <div class="overflow-hidden rounded-2">
+
+        <table class="table table-hover table-borderless">
+            <thead class="bg-info text-center">
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Creation Date</th>
+                    <th>Details</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var department in Model)
+                    {
+                    <tr class="text-center">
+                        <td>@department.Code</td>
+                        <td>@department.Name</td>
+                        <td>@department.CreatedAt</td>
+
+                        <td>
+                            <a asp-action="Details" asp-controller="Department" asp-route-id="@department.Id" class="btn btn-info">Details</a>
+                        </td>
+
+                        <td>
+                            <a asp-action="Edit" asp-controller="Department" asp-route-id="@department.Id" class="btn btn-warning">Edit</a>
+                        </td>
+
+                        <td>
+                            <a asp-action="Delete" asp-controller="Department" asp-route-id="@department.Id" class="btn btn-danger">Delete</a>
+                        </td>
+
+                    </tr>
+                    }
+        </table>
+
+    </div>
+    }
+else
+    {
+    <div class="alert alert-info">
+        <p class="h3">There are no departments to display.</p>
+    </div>
+    }
