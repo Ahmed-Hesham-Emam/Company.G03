@@ -1,0 +1,13 @@
+﻿@model int
+
+<td>
+    <a asp-action="Details" asp-controller="Employee" asp-route-id="@Model" class="btn btn-info">Details</a>
+</td>
+
+<td>
+    <a asp-action="Edit" asp-controller="Employee" asp-route-id="@Model" class="btn btn-warning">Edit</a>
+</td>
+
+<td>
+    <a asp-action="Delete" asp-controller="Employee" asp-route-id="@Model" class="btn btn-danger">Delete</a>
+</td>

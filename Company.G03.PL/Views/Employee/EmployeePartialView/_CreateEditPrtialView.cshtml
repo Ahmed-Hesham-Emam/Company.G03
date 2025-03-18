@@ -1,0 +1,82 @@
+﻿@model CreateEmployeeDto
+
+<div class="form-floating mb-3">
+    <input type="text" asp-for="Name" class="form-control" placeholder="Name" />
+    <label asp-for="Name"></label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="Name"></span>
+    </div>
+</div>
+
+<div class="form-floating mb-3">
+    <input type="text" asp-for="Age" class="form-control" placeholder="Age" />
+    <label asp-for="Age"></label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="Age"></span>
+    </div>
+</div>
+
+<div class="form-floating mb-3">
+    <input asp-for="Email" class="form-control" placeholder="Email" />
+    <label asp-for="Email">Email</label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="Email"></span>
+    </div>
+</div>
+
+<div class="form-floating mb-3">
+    <input type="text" asp-for="Address" class="form-control" placeholder="Address" />
+    <label asp-for="Address"></label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="Address"></span>
+    </div>
+</div>
+
+<div class="form-floating mb-3">
+    <input type="text" asp-for="Phone" class="form-control" placeholder="Phone" />
+    <label asp-for="Phone"></label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="Phone"></span>
+    </div>
+</div>
+
+<div class="form-floating mb-3">
+    <input type="text" asp-for="Salary" class="form-control" placeholder="Salary" />
+    <label asp-for="Salary"></label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="Salary"></span>
+    </div>
+</div>
+
+<div class="d-flex justify-content-start align-items-center mb-3">
+    <label asp-for="IsActive" class="col-form-label me-3"></label>
+    <input asp-for="IsActive" class="form-check" />
+</div>
+
+<div class="d-flex justify-content-start align-items-center mb-3">
+    <label asp-for="IsDeleted" class="col-form-label me-1"></label>
+    <input asp-for="IsDeleted" class="form-check" />
+</div>
+
+<div class="form-floating mb-3">
+    <input asp-for="HiringDate" class="form-control" placeholder="HiringDate" />
+    <label asp-for="HiringDate"></label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="Age"></span>
+    </div>
+</div>
+<div class="form-floating mb-3">
+    <input asp-for="CreatedAt" class="form-control" placeholder="CreatedAt" />
+    <label asp-for="CreatedAt"></label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="CreatedAt"></span>
+    </div>
+</div>

@@ -32,6 +32,7 @@ namespace Company.G03.PL.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(CreateDepartmentDto model)
             {
             if (ModelState.IsValid) //server side validation
@@ -53,45 +54,73 @@ namespace Company.G03.PL.Controllers
             }
 
         [HttpGet]
-        public IActionResult Details(int id, CreateDepartmentDto model)
+        public IActionResult Details(int? id, string viewName = "Details")
             {
-            var department = _departmentRepository.Get(id);
+            if (id == null)
+                {
+                return NotFound();
+                }
+            var department = _departmentRepository.Get(id.Value);
             if (department == null)
                 {
                 return NotFound();
                 }
-            return View(department);
+            return View(viewName, department);
             }
 
         [HttpGet]
-        public IActionResult Edit(int id, EditDepartmentDto model)
+        public IActionResult Edit(int? id)
             {
-            var Department = _departmentRepository.Get(id);
-            model.Id = Department.Id;
-            model.Code = Department.Code;
-            model.Name = Department.Name;
-            model.CreatedAt = Department.CreatedAt;
+            if (id == null) return BadRequest();
 
-            //_departmentRepository.Update(Department);
+            var Department = _departmentRepository.Get(id.Value);
+            if (Department is null) return NotFound(new { StatusCode = 404, message = $"Employee with ID: {id} is not found" });
 
-            return View(model);
+            var DepartmentDto = new CreateDepartmentDto()
+                {
+                Code = Department.Code,
+                Name = Department.Name,
+                CreatedAt = Department.CreatedAt
+                };
+
+            return View(DepartmentDto);
             }
 
         [HttpPost]
-        public IActionResult Edit(int id, CreateDepartmentDto model)
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit([FromRoute] int id, CreateDepartmentDto model)
             {
-            var Department = _departmentRepository.Get(id);
-            Department.Code = model.Code;
-            Department.Name = model.Name;
-            Department.CreatedAt = model.CreatedAt;
-            _departmentRepository.Update(Department);
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+                {
+                var Department = new Department()
+                    {
+                    Id = id,
+                    Code = model.Code,
+                    Name = model.Name,
+                    CreatedAt = model.CreatedAt
+                    };
+                var count = _departmentRepository.Update(Department);
+                if (count > 0)
+                    {
+                    return RedirectToAction(nameof(Index));
+                    }
+
+                }
+            return View(model);
             }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int? id)
             {
-            var department = _departmentRepository.Get(id);
+            if (id == null)
+                {
+                return NotFound();
+                }
+            var department = _departmentRepository.Get(id.Value);
+            if (department == null)
+                {
+                return NotFound();
+                }
             _departmentRepository.Delete(department);
             return RedirectToAction(nameof(Index));
             }
