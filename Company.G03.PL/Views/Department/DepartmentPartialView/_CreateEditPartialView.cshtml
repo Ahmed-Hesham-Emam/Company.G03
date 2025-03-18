@@ -1,0 +1,31 @@
+﻿@model CreateDepartmentDto
+
+<div class="form-floating mb-3">
+    <input type="text" asp-for="Code" class="form-control" placeholder="Code" />
+    <label asp-for="Code"></label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="Code"></span>
+    </div>
+
+</div>
+
+<div class="form-floating mb-3">
+    <input type="text" asp-for="Name" class="form-control" placeholder="Name" />
+    <label asp-for="Name"></label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="Name"></span>
+    </div>
+
+</div>
+
+<div class="form-floating mb-3">
+    <input asp-for="CreatedAt" class="form-control" placeholder="Creation Date" />
+    <label asp-for="CreatedAt">Creation Date</label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="CreatedAt"></span>
+    </div>
+
+</div>

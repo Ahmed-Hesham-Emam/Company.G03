@@ -14,6 +14,7 @@ namespace Company.G03.PL
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allowing the DI container to create the instance of DepartmentRepository
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Allowing the DI container to create the instance of EmployeeRepository
 
             builder.Services.AddDbContext<CompanyDbContext>(options =>
             {

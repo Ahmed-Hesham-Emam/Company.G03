@@ -1,21 +1,22 @@
-﻿@model CreateDepartmentDto
+﻿@model CreateEmployeeDto
 
 @{
-    ViewData["Title"] = "Create Department";
+    ViewData["Title"] = "Create Employee";
 }
 
-<h1>Create New Department</h1>
+<h1>Create New Employee</h1>
 
 <div class="my-5">
 
     <form asp-action="Create">
 
-        <partial name="DepartmentPartialView/_CreateEditPartialView" />
+        <partial name="EmployeePartialView/_CreateEditPrtialView" />
+
 
         <div>
         <input type="submit" value="Create" class="btn btn-primary" />
 
-            <a asp-action="Index" asp-controller="Department" class="btn btn-secondary">Back to List</a>
+            <a asp-action="Index" asp-controller="Employee" class="btn btn-secondary">Back to List</a>
         </div>
     </form>
 
