@@ -109,13 +109,14 @@ namespace Company.G03.PL.Controllers
             {
             if (ModelState.IsValid)
                 {
-                var Department = new Department()
-                    {
-                    Id = id,
-                    Code = model.Code,
-                    Name = model.Name,
-                    CreatedAt = model.CreatedAt
-                    };
+                //var Department = new Department()
+                //    {
+                //    Id = id,
+                //    Code = model.Code,
+                //    Name = model.Name,
+                //    CreatedAt = model.CreatedAt
+                //    };
+                var Department = _mapper.Map<Department>(model);
                 var count = _departmentRepository.Update(Department);
                 if (count > 0)
                     {

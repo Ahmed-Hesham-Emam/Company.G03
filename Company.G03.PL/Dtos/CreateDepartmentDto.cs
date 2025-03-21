@@ -5,6 +5,7 @@ namespace Company.G03.PL.Dtos
     {
     public class CreateDepartmentDto
         {
+        public int Id { get; set; }
         [Required(ErrorMessage = "This Field Is Required !")]
         public string Code { get; set; }
 
