@@ -18,5 +18,8 @@ namespace Company.G03.DAL.Entities
         public bool IsDeleted { get; set; }
         public DateTime HiringDate { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        public int? DepartmentId { get; set; }
+        public Department? Department { get; set; }
         }
     }

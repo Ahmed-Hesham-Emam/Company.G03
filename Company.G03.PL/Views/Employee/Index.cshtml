@@ -5,59 +5,87 @@
 
 <h1 class="mt-5">All Employees</h1>
 
+@if (!string.IsNullOrWhiteSpace(TempData["Message"] as string))
+    {
+    <div class="alert alert-success">
+        <h3 class="m-2">@TempData["Message"]</h3>
+    </div>
+    }
+
+
+
+<form>
+    <div class="d-flex align-items-center justify-content-start">
+        <input name="Search" placeholder="Search by name" class="form-control w-50 me-3"/>
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </div>
+</form>
+
 <div class="mt-5 mb-5">
     <a asp-action="Create" asp-controller"Department" class="btn btn-primary">Create an Employee</a>
 </div>
 
-@if (Model.Count() > 0)
-    {
-    <div class="overflow-hidden rounded-2">
 
-        <table class="table table-hover table-borderless">
-            <thead class="bg-info text-center">
-                <tr>
-                    <th>Name</th>
-                    <th>Age</th>
-                    <th>E-Mail</th>
-                    <th>Address</th>
-                    <th>Phone</th>
-                    <th>Salary</th>
-                    <th>IsActive</th>
-                    <th>IsDeleted</th>
-                    <th>@Html.DisplayNameFor(E=>E.HiringDate)</th>
-                    <th>@Html.DisplayNameFor(E=>E.CreatedAt)</th>
-                    <th>Details</th>
-                    <th>Update</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @foreach (var employee in Model)
-                    {
-                    <tr class="text-center">
-                        <td>@employee.Name</td>
-                        <td>@employee.Age</td>
-                        <td>@employee.Email</td>
-                        <td>@employee.Address</td>
-                        <td>@employee.Phone</td>
-                        <td>@employee.Salary</td>
-                        <td>@employee.IsActive</td>
-                        <td>@employee.IsDeleted</td>
-                        <td>@employee.HiringDate</td>
-                        <td>@employee.CreatedAt</td>
-
-                        <partial name="_ButtonsPartialView" model="@employee.Id" />
-
+<div>
+    @if (Model.Count() > 0)
+        {
+        <div class="rounded-2">
+            <table class="table table-hover table-borderless overflow-auto">
+                <thead class="bg-info text-center">
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>E-Mail</th>
+                        <th>Address</th>
+                        <th>Phone</th>
+                        <th>Salary</th>
+                        <th>IsActive</th>
+                        <th>IsDeleted</th>
+                        <th>@Html.DisplayNameFor(E => E.HiringDate)</th>
+                        <th>@Html.DisplayNameFor(E => E.CreatedAt)</th>
+                        <th>Department</th>
+                        <th>Details</th>
+                        <th>Update</th>
+                        <th>Delete</th>
                     </tr>
-                    }
-        </table>
+                </thead>
 
-    </div>
-    }
-else
-    {
-    <div class="alert alert-info">
-        <p class="h3">There are no Employees to display.</p>
-    </div>
-    }
+                <tbody>
+                    @foreach (var employee in Model)
+                        {
+                        <tr class="text-center">
+                            <td>@employee.Name</td>
+                            <td>@employee.Age</td>
+                            <td>@employee.Email</td>
+                            <td>@employee.Address</td>
+                            <td>@employee.Phone</td>
+                            <td>@employee.Salary</td>
+                            <td>@employee.IsActive</td>
+                            <td>@employee.IsDeleted</td>
+                            <td>@employee.HiringDate</td>
+                            <td>@employee.CreatedAt</td>
+                            @if (employee.Department != null)
+                                {
+                                <td>@employee.Department.Name</td>
+                                }
+                            else
+                                {
+                                <td>N/A</td>
+                                }
+
+                            <partial name="_ButtonsPartialView" model="@employee.Id" />
+
+                        </tr>
+                        }
+            </table>
+
+        </div>
+        }
+    else
+        {
+        <div class="alert alert-info">
+            <p class="h3">There are no Employees to display.</p>
+        </div>
+        }
+
+</div>

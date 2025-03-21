@@ -14,5 +14,6 @@ namespace Company.G03.BLL.Interfaces
         int Add(T model);
         int Update(T model);
         int Delete(T model);
+        List<T> GetByName(string name);
         }
     }

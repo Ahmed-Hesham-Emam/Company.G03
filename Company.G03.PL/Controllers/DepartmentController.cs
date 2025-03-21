@@ -1,4 +1,5 @@
-﻿using Company.G03.BLL.Interfaces;
+﻿using AutoMapper;
+using Company.G03.BLL.Interfaces;
 using Company.G03.BLL.Repositories;
 using Company.G03.DAL.Entities;
 using Company.G03.PL.Dtos;
@@ -9,17 +10,27 @@ namespace Company.G03.PL.Controllers
     public class DepartmentController : Controller
         {
         private readonly IDepartmentRepository _departmentRepository;
+        private readonly IMapper _mapper;
 
-        public DepartmentController(IDepartmentRepository departmentRepository)
+        public DepartmentController(IDepartmentRepository departmentRepository, IMapper mapper)
             {
             _departmentRepository = departmentRepository;
+            _mapper = mapper;
             }
 
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string? Search)
             {
-            var department = _departmentRepository.GetAll();
+            IEnumerable<Department> department;
+            if (string.IsNullOrEmpty(Search))
+                {
+                department = _departmentRepository.GetAll();
+                }
+            else
+                {
+                department = _departmentRepository.GetByName(Search);
+                }
             return View(department);
             }
 
@@ -43,15 +54,18 @@ namespace Company.G03.PL.Controllers
                     Name = model.Name,
                     CreatedAt = model.CreatedAt
                     };
+                //var Department = _mapper.Map<CreateDepartmentDto, Department>(model);
                 var count = _departmentRepository.Add(Department);
 
                 if (count > 0)
                     {
+                    TempData["Message"] = "Department Added Successfully";
                     return RedirectToAction(nameof(Index));
                     }
                 }
             return View(model);
             }
+
 
         [HttpGet]
         public IActionResult Details(int? id, string viewName = "Details")
@@ -68,23 +82,26 @@ namespace Company.G03.PL.Controllers
             return View(viewName, department);
             }
 
+
         [HttpGet]
         public IActionResult Edit(int? id)
             {
             if (id == null) return BadRequest();
 
             var Department = _departmentRepository.Get(id.Value);
-            if (Department is null) return NotFound(new { StatusCode = 404, message = $"Employee with ID: {id} is not found" });
+            if (Department is null) return NotFound(new { StatusCode = 404, message = $"Department with ID: {id} is not found" });
 
-            var DepartmentDto = new CreateDepartmentDto()
-                {
-                Code = Department.Code,
-                Name = Department.Name,
-                CreatedAt = Department.CreatedAt
-                };
+            //var DepartmentDto = new CreateDepartmentDto()
+            //    {
+            //    Code = Department.Code,
+            //    Name = Department.Name,
+            //    CreatedAt = Department.CreatedAt
+            //    };
 
+            var DepartmentDto = _mapper.Map<CreateDepartmentDto>(Department);
             return View(DepartmentDto);
             }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -104,10 +121,10 @@ namespace Company.G03.PL.Controllers
                     {
                     return RedirectToAction(nameof(Index));
                     }
-
                 }
             return View(model);
             }
+
 
         [HttpGet]
         public IActionResult Delete(int? id)

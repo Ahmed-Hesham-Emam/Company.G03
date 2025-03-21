@@ -1,5 +1,9 @@
 ﻿@model CreateEmployeeDto
 
+@{
+    var Departments = new SelectList(ViewData["departments"] as IEnumerable<Department>,"Id" , "Name");
+}
+
 <div class="form-floating mb-3">
     <input type="text" asp-for="Name" class="form-control" placeholder="Name" />
     <label asp-for="Name"></label>
@@ -72,9 +76,21 @@
         <span class="alert-danger" asp-validation-for="Age"></span>
     </div>
 </div>
+
 <div class="form-floating mb-3">
     <input asp-for="CreatedAt" class="form-control" placeholder="CreatedAt" />
     <label asp-for="CreatedAt"></label>
+
+    <div class="my-3">
+        <span class="alert-danger" asp-validation-for="CreatedAt"></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="DepartmentId" class="my-1">Department</label>
+    <select asp-for="DepartmentId" asp-items="Departments" class="form-select">
+        <option value="@null">Select Department</option>
+    </select>
 
     <div class="my-3">
         <span class="alert-danger" asp-validation-for="CreatedAt"></span>
