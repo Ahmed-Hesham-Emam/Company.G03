@@ -11,5 +11,7 @@ namespace Company.G03.DAL.Entities
         public string Code { get; set; }
         public string Name { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        public List<Employee> Employees { get; set; }
         }
     }

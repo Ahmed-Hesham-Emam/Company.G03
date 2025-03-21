@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Company.G03.DAL.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Company.G03.PL.Dtos
     {
@@ -12,5 +13,6 @@ namespace Company.G03.PL.Dtos
 
         [Required(ErrorMessage = "This Field Is Required !")]
         public DateTime CreatedAt { get; set; }
+        public List<Employee>? Employees { get; set; }
         }
     }

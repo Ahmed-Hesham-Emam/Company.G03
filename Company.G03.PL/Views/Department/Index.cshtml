@@ -5,6 +5,21 @@
 
 <h1 class="mt-5">All Departments</h1>
 
+
+@if (!string.IsNullOrWhiteSpace(TempData["Message"] as string))
+    {
+    <div class="alert alert-success">
+        <h3 class="m-2">@TempData["Message"]</h3>
+    </div>
+    }
+
+<form>
+    <div class="d-flex align-items-center justify-content-start">
+        <input name="Search" placeholder="Search by name" class="form-control w-50 me-3" />
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </div>
+</form>
+
 <div class="my-5">
     <a asp-action="Create" asp-controller"Department" class="btn btn-primary">Create Department</a>
 </div>
