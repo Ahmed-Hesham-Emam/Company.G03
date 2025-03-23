@@ -13,7 +13,7 @@
     </div>
     }
 
-<form>
+<form class="my-3">
     <div class="d-flex align-items-center justify-content-start">
         <input name="Search" placeholder="Search by name" class="form-control w-50 me-3" />
         <input type="submit" value="Search" class="btn btn-primary" />
@@ -24,40 +24,49 @@
     <a asp-action="Create" asp-controller"Department" class="btn btn-primary">Create Department</a>
 </div>
 
-@if (Model.Count() > 0)
-    {
-    <div class="overflow-hidden rounded-2">
 
-        <table class="table table-hover table-borderless">
-            <thead class="bg-info text-center">
-                <tr>
-                    <th>Code</th>
-                    <th>Name</th>
-                    <th>Creation Date</th>
-                    <th>Details</th>
-                    <th>Update</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var department in Model)
-                    {
-                    <tr class="text-center">
-                        <td>@department.Code</td>
-                        <td>@department.Name</td>
-                        <td>@department.CreatedAt</td>
+<div class="">
+    @if (Model.Count() > 0)
+        {
+        <div class="rounded-2">
 
-                        <partial name="_ButtonsPartialView" model="@department.Id"/>
-
+            <table class="table table-responsive table-hover table-borderless overflow-auto">
+                <thead class="bg-info text-center">
+                    <tr>
+                        <th>#</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Creation Date</th>
+                        <th>Details</th>
+                        <th>Update</th>
+                        <th>Delete</th>
                     </tr>
-                    }
-        </table>
+                </thead>
+                <tbody>
+                    @{int index = 1; }
 
-    </div>
-    }
-else
-    {
-    <div class="alert alert-info">
-        <p class="h3">There are no departments to display.</p>
-    </div>
-    }
+                    @foreach (var department in Model)
+                        {
+                        <tr class="text-center">
+                            <td>@index</td>
+                            <td>@department.Code</td>
+                            <td>@department.Name</td>
+                            <td>@department.CreatedAt</td>
+
+                            <partial name="_ButtonsPartialView" model="@department.Id" />
+
+                        </tr>
+                        index++;
+                        }
+            </table>
+
+        </div>
+        }
+    else
+        {
+        <div class="alert alert-info">
+            <p class="h3">There are no departments to display.</p>
+        </div>
+        }
+
+</div>

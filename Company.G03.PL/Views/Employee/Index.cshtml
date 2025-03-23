@@ -14,7 +14,7 @@
 
 
 
-<form>
+<form class="my-3">
     <div class="d-flex align-items-center justify-content-start">
         <input name="Search" placeholder="Search by name" class="form-control w-50 me-3"/>
         <input type="submit" value="Search" class="btn btn-primary" />
@@ -33,6 +33,8 @@
             <table class="table table-hover table-borderless overflow-auto">
                 <thead class="bg-info text-center">
                     <tr>
+                        <th>#</th>
+                        <th>Image</th>
                         <th>Name</th>
                         <th>Age</th>
                         <th>E-Mail</th>
@@ -51,33 +53,46 @@
                 </thead>
 
                 <tbody>
+                    @{int index = 1; }
                     @foreach (var employee in Model)
                         {
                         <tr class="text-center">
-                            <td>@employee.Name</td>
-                            <td>@employee.Age</td>
-                            <td>@employee.Email</td>
-                            <td>@employee.Address</td>
-                            <td>@employee.Phone</td>
-                            <td>@employee.Salary</td>
-                            <td>@employee.IsActive</td>
-                            <td>@employee.IsDeleted</td>
-                            <td>@employee.HiringDate</td>
-                            <td>@employee.CreatedAt</td>
-                            @if (employee.Department != null)
+                            <td>@index</td>
+
+
+                            @if (employee.ImageName is null || !File.Exists(employee.ImageName))
                                 {
-                                <td>@employee.Department.Name</td>
+                                <td><img src="~/Files/Imgs/NoImage.webp" class="img-fluid rounded-circle" style="max-width: 100px; max-height: 100px;" /></td>
                                 }
                             else
                                 {
-                                <td>N/A</td>
+                                <td><img src="~/Files/Imgs/@employee.ImageName" class="img-fluid rounded-circle" style="max-width: 100px; max-height: 100px;" /></td>
                                 }
+                                <td>@employee.Name</td>
+                                <td>@employee.Age</td>
+                                <td>@employee.Email</td>
+                                <td>@employee.Address</td>
+                                <td>@employee.Phone</td>
+                                <td>@employee.Salary</td>
+                                <td>@employee.IsActive</td>
+                                <td>@employee.IsDeleted</td>
+                                <td>@employee.HiringDate</td>
+                                <td>@employee.CreatedAt</td>
+                                @if (employee.Department != null)
+                                    {
+                                    <td>@employee.Department.Name</td>
+                                    }
+                                else
+                                    {
+                                    <td>N/A</td>
+                                    }
 
-                            <partial name="_ButtonsPartialView" model="@employee.Id" />
+                                <partial name="_ButtonsPartialView" model="@employee.Id" />
 
-                        </tr>
+                            </tr>
+                        index++;
                         }
-            </table>
+</table>
 
         </div>
         }
