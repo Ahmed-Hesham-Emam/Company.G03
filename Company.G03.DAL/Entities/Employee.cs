@@ -8,11 +8,11 @@ namespace Company.G03.DAL.Entities
     {
     public class Employee : BaseEntity
         {
-        public string Name { get; set; }
+        public required string Name { get; set; }
         public int? Age { get; set; }
-        public string Address { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
+        public required string Address { get; set; }
+        public required string Email { get; set; }
+        public required string Phone { get; set; }
         public decimal Salary { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
@@ -21,5 +21,7 @@ namespace Company.G03.DAL.Entities
 
         public int? DepartmentId { get; set; }
         public Department? Department { get; set; }
+
+        public string? ImageName { get; set; }
         }
     }

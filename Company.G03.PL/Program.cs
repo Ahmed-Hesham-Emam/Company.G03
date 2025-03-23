@@ -1,4 +1,5 @@
 using AutoMapper;
+using Company.G03.BLL;
 using Company.G03.BLL.Interfaces;
 using Company.G03.BLL.Repositories;
 using Company.G03.DAL.Data.Contexts;
@@ -18,6 +19,7 @@ namespace Company.G03.PL
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allowing the DI container to create the instance of DepartmentRepository
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Allowing the DI container to create the instance of EmployeeRepository
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Allowing the DI container to create the instance of UnitOfWork
             builder.Services.AddAutoMapper(typeof(EmployeeProfile));
             //builder.Services.AddAutoMapper(m => m.AddProfile(new EmployeeProfile()));
 
@@ -26,7 +28,7 @@ namespace Company.G03.PL
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             }); // Allowing the DI container to create the instance of CompanyDbContext
 
-            //Lifetime
+            //Lifetime services
             builder.Services.AddScoped<IScopedServices, ScopedServices>(); // Per request
             builder.Services.AddTransient<ITransientServices, TransientServices>(); // per operation
             builder.Services.AddSingleton<ISingletonServices, SingletonServices>(); // per application

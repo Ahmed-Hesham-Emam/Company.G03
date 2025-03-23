@@ -8,10 +8,10 @@ namespace Company.G03.DAL.Entities
     {
     public class Department : BaseEntity
         {
-        public string Code { get; set; }
-        public string Name { get; set; }
+        public required string Code { get; set; }
+        public required string Name { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        public List<Employee> Employees { get; set; }
+        public required List<Employee> Employees { get; set; }
         }
     }
