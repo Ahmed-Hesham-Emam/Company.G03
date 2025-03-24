@@ -58,16 +58,7 @@
                         {
                         <tr class="text-center">
                             <td>@index</td>
-
-
-                            @if (employee.ImageName is null || !File.Exists(employee.ImageName))
-                                {
-                                <td><img src="~/Files/Imgs/NoImage.webp" class="img-fluid rounded-circle" style="max-width: 100px; max-height: 100px;" /></td>
-                                }
-                            else
-                                {
-                                <td><img src="~/Files/Imgs/@employee.ImageName" class="img-fluid rounded-circle" style="max-width: 100px; max-height: 100px;" /></td>
-                                }
+                                <td><img src="~/Files/Imgs/@employee.ImageName" class="img-fluid rounded-circle" style="max-width: 100px; max-height: 100px;" /></td>    
                                 <td>@employee.Name</td>
                                 <td>@employee.Age</td>
                                 <td>@employee.Email</td>
