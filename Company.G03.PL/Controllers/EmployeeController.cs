@@ -34,6 +34,19 @@ namespace Company.G03.PL.Controllers
                 {
                 employees = await _unitOfWork.EmployeeRepository.GetByNameAsync(Search);
                 }
+
+            foreach (var employee in employees)
+                {
+                string imageFileName = employee.ImageName ?? "NoImage.webp";
+                string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", "Imgs", imageFileName);
+
+                // If file does not exist, use "NoImage.webp"
+                if (!System.IO.File.Exists(imagePath) || employee.ImageName is null)
+                    {
+                    employee.ImageName = "NoImage.webp";
+                    }
+                }
+
             return View(employees);
             }
 
