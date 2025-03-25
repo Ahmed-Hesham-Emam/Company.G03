@@ -22,7 +22,7 @@
 </form>
 
 <div class="mt-5 mb-5">
-    <a asp-action="Create" asp-controller="Department" class="btn btn-primary">Create an Employee</a>
+    <a asp-action="Create" asp-controller="Employee" class="btn btn-primary">Create an Employee</a>
 </div>
 
 
@@ -58,7 +58,8 @@
                         {
                         <tr class="align-middle text-center">
                             <td> @index </td>
-                            <td><img src="~/Files/Imgs/@employee.ImageName" class="img-fluid rounded-circle" style="max-width: 100px; max-height: 100px;" /></td>
+                            <td><img src="~/Files/Imgs/@employee.ImageName" class="img-thumbnail object-fit-cover rounded-circle" style="width: 100px; height: 100px;" /></td>
+
                             <td>@employee.Name</td>
                             <td>@employee.Age</td>
                             <td>@employee.Email</td>
@@ -69,6 +70,7 @@
                             <td>@employee.IsDeleted</td>
                             <td>@employee.HiringDate</td>
                             <td>@employee.CreatedAt</td>
+
                             @if (employee.Department != null)
                                 {
                                 <td>@employee.Department.Name</td>
@@ -79,15 +81,12 @@
                                 }
 
                             <partial name="_ButtonsPartialView" model="@employee.Id" />
-
-
                        </tr>
                         index++;
                         }
                     </tbody>
             </table>
-
-   
+ 
         }
     else
         {

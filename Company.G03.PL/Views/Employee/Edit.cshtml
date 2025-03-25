@@ -8,14 +8,15 @@
 <div class="mt-5 mb-5">
     <form asp-action="Edit" enctype="multipart/form-data">
 
+        <input asp-for="ImageName" hidden />
+
         <partial name="EmployeePartialView/_CreateEditPrtialView" />
 
-        <input asp-for="ImageName" hidden/>
         <div>
             <input type="submit" value="Edit" class="btn btn-primary" />
             <a asp-action="Index" asp-controller="Employee" class="btn btn-secondary">Back to List</a>
         </div>
-  
+
     </form>
 </div>
 

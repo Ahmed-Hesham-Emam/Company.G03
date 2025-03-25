@@ -1,11 +1,13 @@
 ﻿using Company.G03.DAL.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 
 namespace Company.G03.DAL.Data.Contexts
     {
-    public class CompanyDbContext : DbContext
+    public class CompanyDbContext : IdentityDbContext<AppUser>
         {
         public CompanyDbContext(DbContextOptions<CompanyDbContext> options) : base(options)
             {

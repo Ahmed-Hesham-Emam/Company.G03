@@ -4,12 +4,16 @@ using Company.G03.BLL.Repositories;
 using Company.G03.DAL.Entities;
 using Company.G03.PL.Dtos;
 using Company.G03.PL.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace Company.G03.PL.Controllers
     {
+
+    [Authorize]
     public class EmployeeController : Controller
         {
         private readonly IUnitOfWork _unitOfWork;
