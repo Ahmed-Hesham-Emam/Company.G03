@@ -3,8 +3,10 @@ using Company.G03.BLL;
 using Company.G03.BLL.Interfaces;
 using Company.G03.BLL.Repositories;
 using Company.G03.DAL.Data.Contexts;
+using Company.G03.DAL.Entities;
 using Company.G03.PL.AutoMapper;
 using Company.G03.PL.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.G03.PL
@@ -20,7 +22,10 @@ namespace Company.G03.PL
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allowing the DI container to create the instance of DepartmentRepository
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Allowing the DI container to create the instance of EmployeeRepository
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Allowing the DI container to create the instance of UnitOfWork
+
+            builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<CompanyDbContext>();
             builder.Services.AddAutoMapper(typeof(EmployeeProfile));
+
             //builder.Services.AddAutoMapper(m => m.AddProfile(new EmployeeProfile()));
 
             builder.Services.AddDbContext<CompanyDbContext>(options =>
@@ -33,6 +38,11 @@ namespace Company.G03.PL
             builder.Services.AddTransient<ITransientServices, TransientServices>(); // per operation
             builder.Services.AddSingleton<ISingletonServices, SingletonServices>(); // per application
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/SignIn";
+                options.LogoutPath = "/Account/SignOut";
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -43,16 +53,17 @@ namespace Company.G03.PL
                 app.UseHsts();
                 }
 
-            app.UseHttpsRedirection();
+            app.UseHttpsRedirection(); // To redirect HTTP requests to HTTPS
             app.UseStaticFiles(); // To serve static files like images, CSS, and JavaScript files
 
-            app.UseRouting();
+            app.UseRouting(); // To enable routing middleware
 
-            //app.UseAuthorization();
+            app.UseAuthentication(); // To enable authentication middleware
+            app.UseAuthorization(); // To enable authorization middleware
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Department}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=SignIn}/{id?}");
 
             app.Run();
             }
