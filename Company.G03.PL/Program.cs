@@ -23,7 +23,11 @@ namespace Company.G03.PL
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Allowing the DI container to create the instance of EmployeeRepository
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Allowing the DI container to create the instance of UnitOfWork
 
-            builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<CompanyDbContext>();
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+                            .AddEntityFrameworkStores<CompanyDbContext>()
+                            .AddDefaultTokenProviders();
+
+
             builder.Services.AddAutoMapper(typeof(EmployeeProfile));
 
             //builder.Services.AddAutoMapper(m => m.AddProfile(new EmployeeProfile()));
@@ -38,12 +42,15 @@ namespace Company.G03.PL
             builder.Services.AddTransient<ITransientServices, TransientServices>(); // per operation
             builder.Services.AddSingleton<ISingletonServices, SingletonServices>(); // per application
 
+
+
             builder.Services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = "/Account/SignIn";
                 options.LogoutPath = "/Account/SignOut";
             });
-            var app = builder.Build();
+
+            var app = builder.Build(); // Create an instance of the application
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -63,7 +70,7 @@ namespace Company.G03.PL
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Account}/{action=SignIn}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
             }

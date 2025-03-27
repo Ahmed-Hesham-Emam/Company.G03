@@ -1,20 +1,18 @@
-﻿@model CreateEmployeeDto
+﻿@model ReturnUserDto
 @{
-    ViewData["Title"] = "Edit Employee";
+    ViewData["Title"] = "Edit User";
 }
 
-<h1>Edit Employee</h1>
+<h1>Edit User</h1>
 
 <div class="mt-5 mb-5">
     <form asp-action="Edit" enctype="multipart/form-data">
 
-        <input asp-for="ImageName" hidden />
-
-        <partial name="EmployeePartialView/_CreateEditPrtialView" />
+        <partial name="UserPartialView/_CreateEditPrtialView" />
 
         <div>
             <input type="submit" value="Edit" class="btn btn-primary" />
-            <a asp-action="Index" asp-controller="Employee" class="btn btn-secondary">Back to List</a>
+            <a asp-action="Index" asp-controller="User" class="btn btn-secondary">Back to List</a>
         </div>
 
     </form>

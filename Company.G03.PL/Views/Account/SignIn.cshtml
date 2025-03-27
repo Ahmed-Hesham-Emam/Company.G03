@@ -6,6 +6,7 @@
 
 
 
+
 <div class="main-agileinfo">
     <div class="agileits-top">
         <form asp-action="SignIn">
@@ -23,6 +24,10 @@
             <input type="submit" value="SIGNIN">
         </form>
         <p>Don't have an Account? <a asp-action="SignUp"> Register Now!</a></p>
+        <p class="my-2"><a asp-action="ForgotPassword"> Forgot password?</a></p>
+        <p class="mt-2">
+            <a class="link-underline-info link-info" asp-action="Index" asp-controller="Home">Back to Home Screen</a>
+        </p>  
     </div>
 </div>
 

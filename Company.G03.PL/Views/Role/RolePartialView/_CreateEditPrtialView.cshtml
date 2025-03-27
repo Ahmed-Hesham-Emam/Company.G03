@@ -1,0 +1,11 @@
+﻿@model ReturnRoleDto
+
+
+<div class="form-floating mb-3">
+    <input type="text" asp-for="Name" class="form-control" placeholder="Name" />
+    <label asp-for="Name"></label>
+
+    <div class="my-3">
+        <span class="bg-transparent border-0 alert alert-danger" asp-validation-for="Name"></span>
+    </div>
+</div>

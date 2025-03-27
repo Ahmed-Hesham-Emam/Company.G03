@@ -1,20 +1,20 @@
-﻿@model CreateEmployeeDto
+﻿@model ReturnRoleDto
 @{
-    ViewData["Title"] = "Edit Employee";
+    ViewData["Title"] = "Edit Role";
 }
 
-<h1>Edit Employee</h1>
+<h1>Edit User</h1>
 
 <div class="mt-5 mb-5">
     <form asp-action="Edit" enctype="multipart/form-data">
+        <partial name="RolePartialView/_CreateEditPrtialView" model="@Model" />
 
-        <input asp-for="ImageName" hidden />
+        <a asp-action="AddOrRemoveUsers" asp-route-roleId="@Model.Id" class="btn btn-outline-primary my-2">Add/Remove User</a>
 
-        <partial name="EmployeePartialView/_CreateEditPrtialView" />
 
         <div>
             <input type="submit" value="Edit" class="btn btn-primary" />
-            <a asp-action="Index" asp-controller="Employee" class="btn btn-secondary">Back to List</a>
+            <a asp-action="Index" asp-controller="Role" class="btn btn-secondary">Back to List</a>
         </div>
 
     </form>

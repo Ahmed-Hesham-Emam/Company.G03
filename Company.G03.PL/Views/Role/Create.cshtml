@@ -1,0 +1,27 @@
+﻿@model IEnumerable<ReturnRoleDto>
+
+@{
+    ViewData["Title"] = "Create Role";
+}
+
+<h1>Create New Role</h1>
+
+<div class="my-5">
+
+    <form asp-action="Create">
+
+        <partial name="RolePartialView/_CreateEditPrtialView" model="@Model"/>
+
+        <div>
+        <input type="submit" value="Create" class="btn btn-primary" />
+
+            <a asp-action="Index" asp-controller="Role" class="btn btn-secondary">Back to List</a>
+        </div>
+    </form>
+
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

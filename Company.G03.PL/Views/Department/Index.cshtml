@@ -21,7 +21,7 @@
 </form>
 
 <div class="my-5">
-    <a asp-action="Create" asp-controller"Department" class="btn btn-primary">Create Department</a>
+    <a asp-action="Create" asp-controller="Department" class="btn btn-primary">Create Department</a>
 </div>
 
 
@@ -52,7 +52,7 @@
                             <td>@department.Name</td>
                             <td>@department.CreatedAt</td>
 
-                            <partial name="_ButtonsPartialView" model="@department.Id" />
+                            <partial name="_ButtonsPartialView" model="@department.Id.ToString()" />
 
                         </tr>
                         index++;
