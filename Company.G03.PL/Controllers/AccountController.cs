@@ -1,5 +1,6 @@
 ﻿using Company.G03.DAL.Entities;
 using Company.G03.PL.Dtos;
+using Company.G03.PL.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ namespace Company.G03.PL.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             }
+
+        #region SignUp
 
         [HttpGet]
         public IActionResult SignUp()
@@ -70,6 +73,10 @@ namespace Company.G03.PL.Controllers
             return View(model);
             }
 
+        #endregion
+
+        #region SignIn
+
         [HttpGet]
         public IActionResult SignIn()
             {
@@ -105,6 +112,9 @@ namespace Company.G03.PL.Controllers
             return View(model);
             }
 
+        #endregion
+
+        #region SignOut
 
         [HttpGet]
         public new async Task<IActionResult> SignOut()
@@ -112,6 +122,97 @@ namespace Company.G03.PL.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("SignIn");
             }
+
+        #endregion
+
+        #region PasswordReset
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
+            {
+            return View();
+            }
+
+        [HttpPost]
+        public async Task<IActionResult> SendResetPasswordUrl(ForgotPasswordDto model)
+            {
+            if (ModelState.IsValid)
+                {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user is not null)
+                    {
+                    // Token Generation
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                    // URL Creation
+                    var url = Url.Action("ResetPassword", "Account", new { email = model.Email, token }, Request.Scheme);
+
+
+                    var email = new Email()
+                        {
+                        EmailAddress = model.Email,
+                        Subject = "Reset Password",
+                        Body = url
+                        };
+
+                    var flag = EmailSettings.SendEmail(email);
+
+                    if (flag)
+                        {
+                        return RedirectToAction("CheckInbox");
+                        }
+                    }
+                }
+            ModelState.AddModelError("", "Process Failed SUCCESSFULLY !");
+
+            return View("ForgotPassword", model);
+            }
+
+        [HttpGet]
+        public IActionResult CheckInbox()
+            {
+            return View();
+            }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string email, string token)
+            {
+            TempData["Email"] = email;
+            TempData["Token"] = token;
+            return View();
+            }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto model)
+            {
+
+            if (ModelState.IsValid)
+                {
+                var email = TempData["Email"] as string;
+                var token = TempData["Token"] as string;
+
+                if (email is null || token is null)
+                    {
+                    return BadRequest("WHO ARE YOU?! (╯°□°）╯︵ ┻━┻");
+                    }
+
+                var user = await _userManager.FindByEmailAsync(email);
+
+                if (user is not null)
+                    {
+                    var res = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+                    if (res.Succeeded)
+                        {
+                        return RedirectToAction("SignIn");
+                        }
+                    }
+                ModelState.AddModelError("", "WHO ARE YOU?! (╯°□°）╯︵ ┻━┻");
+
+                }
+            return View();
+            }
+
+        #endregion
 
         }
     }

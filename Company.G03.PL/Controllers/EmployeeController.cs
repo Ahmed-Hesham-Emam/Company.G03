@@ -54,7 +54,7 @@ namespace Company.G03.PL.Controllers
             return View(employees);
             }
 
-
+        #region Create
 
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -63,7 +63,6 @@ namespace Company.G03.PL.Controllers
             ViewData["departments"] = departments;
             return View();
             }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -91,6 +90,9 @@ namespace Company.G03.PL.Controllers
             return View(model);
             }
 
+        #endregion
+
+        #region Details
 
         [HttpGet]
         public async Task<IActionResult> Details(int? id, string viewName = "Details")
@@ -108,6 +110,9 @@ namespace Company.G03.PL.Controllers
             return View(viewName, employee);
             }
 
+        #endregion
+
+        #region Update
 
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
@@ -156,6 +161,9 @@ namespace Company.G03.PL.Controllers
             return View(model);
             }
 
+        #endregion
+
+        #region Delete
 
         [HttpGet]
         public async Task<IActionResult> Delete(int? id)
@@ -177,5 +185,7 @@ namespace Company.G03.PL.Controllers
                 }
             return RedirectToAction(nameof(Index));
             }
+
+        #endregion
         }
     }

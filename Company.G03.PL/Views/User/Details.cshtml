@@ -1,0 +1,64 @@
+﻿@model ReturnUserDto
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Employee Details</h1>
+
+<div class="my-5">
+
+    <div class="form-floating mb-3">
+        <input type="text" asp-for="Id" class="form-control" placeholder="Address" readonly />
+        <label asp-for="Id"></label>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input type="text" asp-for="UserName" class="form-control" placeholder="Name" readonly />
+        <label asp-for="UserName"></label>
+    </div>
+
+
+    <div class="form-floating mb-3">
+        <input asp-for="FirstName" class="form-control" placeholder="Email" readonly />
+        <label asp-for="FirstName"></label>
+    </div>
+
+
+    <div class="form-floating mb-3">
+        <input type="text" asp-for="LastName" class="form-control" placeholder="Phone" readonly />
+        <label asp-for="LastName"></label>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input type="text" asp-for="Email" class="form-control" placeholder="Salary" readonly />
+        <label asp-for="Email"></label>
+    </div>
+
+
+
+    @if (Model.Roles != null)
+        {
+        foreach (var role in Model.Roles)
+            {
+            <div class="form-floating mb-3">
+                <input class="form-control" value="@role" placeholder="Role" disabled />
+                <label>Role</label>
+            </div>
+            }
+        }  
+    else
+    {
+    <div class="form-floating mb-3">
+        <input class="form-control" value="N/A" placeholder="N/A" disabled />
+        <label>Role</label>
+    </div>
+    }
+
+
+
+    <div>
+        <a asp-action="Index" asp-controller="User" class="btn btn-secondary">Back to List</a>
+    </div>
+
+</div>
+

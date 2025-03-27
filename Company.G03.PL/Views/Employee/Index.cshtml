@@ -58,7 +58,7 @@
                         {
                         <tr class="align-middle text-center">
                             <td> @index </td>
-                            <td><img src="~/Files/Imgs/@employee.ImageName" class="img-thumbnail object-fit-cover rounded-circle" style="width: 100px; height: 100px;" /></td>
+                            <td><img src="~/Files/Imgs/@employee.ImageName" class="img-thumbnail object-fit-cover rounded-circle" style="max-width: 100px; max-height: 100px;" /></td>
 
                             <td>@employee.Name</td>
                             <td>@employee.Age</td>
@@ -73,14 +73,14 @@
 
                             @if (employee.Department != null)
                                 {
-                                <td>@employee.Department.Name</td>
+                                <td >@employee.Department.Name</td>
                                 }
                             else
                                 {
                                 <td>N/A</td>
                                 }
 
-                            <partial name="_ButtonsPartialView" model="@employee.Id" />
+                            <partial name="_ButtonsPartialView" model="@employee.Id.ToString()" />
                        </tr>
                         index++;
                         }
