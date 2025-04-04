@@ -43,6 +43,7 @@ namespace Company.G03.PL
             builder.Services.AddSingleton<ISingletonServices, SingletonServices>(); // per application
 
 
+            #region PathChanges
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
