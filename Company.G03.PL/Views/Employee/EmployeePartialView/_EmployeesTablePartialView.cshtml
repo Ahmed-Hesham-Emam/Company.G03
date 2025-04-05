@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Employee>
+
+    <table class="table table-striped table-hover table-bordered rounded-3">
+        <thead class="bg-info text-center">
+            <tr>
+                <th>#</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>E-Mail</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Salary</th>
+                <th>IsActive</th>
+                <th>IsDeleted</th>
+                <th>@Html.DisplayNameFor(E => E.HiringDate)</th>
+                <th>@Html.DisplayNameFor(E => E.CreatedAt)</th>
+                <th>Department</th>
+                <th>Details</th>
+                <th>Update</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+
+        @{int index = 1; }
+        <tbody>
+            @foreach (var employee in Model)
+                {
+                <tr class="align-middle text-center">
+                    <td> @index </td>
+                    <td><img src="~/Files/Imgs/@employee.ImageName" class="img-thumbnail object-fit-cover rounded-circle" style="max-width: 100px; max-height: 100px;" /></td>
+
+                    <td>@employee.Name</td>
+                    <td>@employee.Age</td>
+                    <td>@employee.Email</td>
+                    <td>@employee.Address</td>
+                    <td>@employee.Phone</td>
+                    <td>@employee.Salary</td>
+                    <td>@employee.IsActive</td>
+                    <td>@employee.IsDeleted</td>
+                    <td>@employee.HiringDate</td>
+                    <td>@employee.CreatedAt</td>
+
+                    @if (employee.Department != null)
+                        {
+                        <td>@employee.Department.Name</td>
+                        }
+                    else
+                        {
+                        <td>N/A</td>
+                        }
+
+                    <partial name="_ButtonsPartialView" model="@employee.Id.ToString()" />
+                </tr>
+                index++;
+                }
+        </tbody>
+    </table>
+
+    
