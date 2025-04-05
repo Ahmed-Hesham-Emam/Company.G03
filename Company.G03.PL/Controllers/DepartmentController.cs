@@ -41,7 +41,15 @@ namespace Company.G03.PL.Controllers
 
         public async Task<IActionResult> Search(string Search)
             {
-            var department = await _unitOfWork.DepartmentRepository.GetByNameAsync(Search);
+            IEnumerable<Department> department;
+            if (string.IsNullOrEmpty(Search))
+                {
+                department = await _unitOfWork.DepartmentRepository.GetAllAsync();
+                }
+            else
+                {
+                department = await _unitOfWork.DepartmentRepository.GetByNameAsync(Search);
+                }
 
             return PartialView("DepartmentPartialView/_DepartmentsTablePartialView", department);
             }
