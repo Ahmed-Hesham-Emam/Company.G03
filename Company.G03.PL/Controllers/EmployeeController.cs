@@ -56,7 +56,15 @@ namespace Company.G03.PL.Controllers
 
         public async Task<IActionResult> Search(string Search)
             {
-            var employees = await _unitOfWork.EmployeeRepository.GetByNameAsync(Search);
+            IEnumerable<Employee> employees;
+            if (string.IsNullOrEmpty(Search))
+                {
+                employees = await _unitOfWork.EmployeeRepository.GetAllAsync();
+                }
+            else
+                {
+                employees = await _unitOfWork.EmployeeRepository.GetByNameAsync(Search);
+                }
             foreach (var employee in employees)
                 {
                 string imageFileName = employee.ImageName ?? "NoImage.webp";
