@@ -9,6 +9,7 @@ using Company.G03.PL.Helpers.Email;
 using Company.G03.PL.Helpers.SMS;
 using Company.G03.PL.Services;
 using Company.G03.PL.Settings;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
@@ -52,12 +53,32 @@ namespace Company.G03.PL
 
             #endregion
 
-            #region DB_Connection
+            #region DB_Connection & Auth
 
             builder.Services.AddDbContext<CompanyDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            }); // Allowing the DI container to create the instance of CompanyDbContext
+            }).AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            {
+                options.LoginPath = "/Account/SignIn"; // Redirect to this path if the user is not authenticated
+                options.ExpireTimeSpan = TimeSpan.FromDays(30); // Set the expiration time for the authentication cookie
+                options.LogoutPath = "/Account/SignOut"; // Redirect to this path when the user logs out
+                options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to this path if access is denied
+            })
+            .AddGoogle(options =>
+            {
+                options.ClientId = builder.Configuration["Auth:Google:ClientId"]; // Google Client ID
+                options.ClientSecret = builder.Configuration["Auth:Google:ClientSecret"]; // Google Client Secret
+            }).AddFacebook(options =>
+            {
+                options.AppId = builder.Configuration["Auth:Facebook:ClientId"]; // Facebook App ID
+                options.AppSecret = builder.Configuration["Auth:Facebook:ClientSecret"]; // Facebook App Secret
+            });
 
             #endregion
 
@@ -69,48 +90,49 @@ namespace Company.G03.PL
 
             #endregion
 
-            #region PathChanges
+            #region Old Auth
 
-            builder.Services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = "/Account/SignIn";
-                options.LogoutPath = "/Account/SignOut";
-                options.AccessDeniedPath = "/Account/AccessDenied";
-            });
+            //        builder.Services.ConfigureApplicationCookie(options =>
+            //        {
+            //            options.LoginPath = "/Account/SignIn";
+            //            options.LogoutPath = "/Account/SignOut";
+            //            options.AccessDeniedPath = "/Account/AccessDenied";
+            //        });
+
+            //        #endregion
+
+            //        #region Auth
+
+            //        #region Google
+            //        builder.Services.AddAuthentication(o =>
+            //{
+            //    o.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
+            //    o.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+            //}).AddGoogle(o =>
+            //    {
+            //        o.ClientId = builder.Configuration["Auth:Google:ClientId"];
+            //        o.ClientSecret = builder.Configuration["Auth:Google:ClientSecret"];
+            //    }
+            //    );
+            //        #endregion
+
+            //        #region Facebook
+
+            //        builder.Services.AddAuthentication(o =>
+            //        {
+            //            o.DefaultAuthenticateScheme = FacebookDefaults.AuthenticationScheme;
+            //            o.DefaultChallengeScheme = FacebookDefaults.AuthenticationScheme;
+            //        }).AddFacebook(o =>
+            //        {
+            //            o.ClientId = builder.Configuration["Auth:Facebook:ClientId"];
+            //            o.ClientSecret = builder.Configuration["Auth:Facebook:ClientSecret"];
+            //        }
+            //);
+
+            //        #endregion
 
             #endregion
 
-            #region Auth
-
-            #region Google
-            builder.Services.AddAuthentication(o =>
-    {
-        o.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
-        o.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-    }).AddGoogle(o =>
-        {
-            o.ClientId = builder.Configuration["Auth:Google:ClientId"];
-            o.ClientSecret = builder.Configuration["Auth:Google:ClientSecret"];
-        }
-        );
-            #endregion
-
-            #region Facebook
-
-            builder.Services.AddAuthentication(o =>
-            {
-                o.DefaultAuthenticateScheme = FacebookDefaults.AuthenticationScheme;
-                o.DefaultChallengeScheme = FacebookDefaults.AuthenticationScheme;
-            }).AddFacebook(o =>
-            {
-                o.ClientId = builder.Configuration["Auth:Facebook:ClientId"];
-                o.ClientSecret = builder.Configuration["Auth:Facebook:ClientSecret"];
-            }
-    );
-
-            #endregion
-
-            #endregion
             var app = builder.Build(); // Create an instance of the application
 
             // Configure the HTTP request pipeline.
