@@ -9,5 +9,27 @@
 </td>
 
 <td>
-    <a asp-action="Delete" asp-route-id="@Model" class="btn btn-danger">Delete</a>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#DeleteModal-@Model">
+        Delete
+    </button>
 </td>
+
+<div class="modal fade" id="DeleteModal-@Model" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Department</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are You Sure to Delete this Entry with Id: @Model?
+            </div>
+            <div class="modal-footer">
+                <form asp-action="Delete" asp-route-id="@Model" class="mt-4">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

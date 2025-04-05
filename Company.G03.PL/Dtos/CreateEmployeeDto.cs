@@ -29,6 +29,7 @@ namespace Company.G03.PL.Dtos
         public required string Phone { get; set; }
 
         [DataType(DataType.Currency, ErrorMessage = "Must be a valid Salary")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Salary must be a positive number")]
         public decimal Salary { get; set; }
         //////////////////////////////////////////////////////////
 

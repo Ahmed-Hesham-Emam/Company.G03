@@ -16,18 +16,27 @@
             <input class="text" asp-for="Password" placeholder="Password" required="">
             <div class="wthree-text">
                 <label class="anim my-2">
-                    <input asp-for="RememberMe" class="checkbox">
+                    <input class="checkbox" asp-for="RememberMe" />
                     <span>Remeber Me?</span>
                 </label>
                 <div class="clear"> </div>
             </div>
             <input type="submit" value="SIGNIN">
         </form>
+
+        @*Other Sign-in Options*@
+    <div class="d-flex align-items-center justify-content-center gap-3 mb-3 " >
+        <a asp-action="GoogleLogin" class="btn btn-outline-danger"> SignIn With Google</a>
+
+        <a asp-action="FacebookLogin" class="btn btn-outline-info"> SignIn With Facebook</a>
+    </div>
+   
+
         <p>Don't have an Account? <a asp-action="SignUp"> Register Now!</a></p>
         <p class="my-2"><a asp-action="ForgotPassword"> Forgot password?</a></p>
         <p class="mt-2">
             <a class="link-underline-info link-info" asp-action="Index" asp-controller="Home">Back to Home Screen</a>
-        </p>  
+        </p>
     </div>
 </div>
 

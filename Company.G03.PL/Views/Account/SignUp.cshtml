@@ -1,8 +1,6 @@
 ﻿@model SignUpDto
 
 
-
-
 @{
     ViewData["Title"] = "SignUp";
     Layout = "~/Views/Shared/_AuthLayout.cshtml";
@@ -22,11 +20,12 @@
             <input class="text my-4" asp-for="FirstName" placeholder="First Name" required="">
             <input class="text" asp-for="LastName" placeholder="Last Name" required="">
             <input class="text email" asp-for="Email" placeholder="Email" required="">
+            <input class="text" asp-for="PhoneNumber" placeholder="Phone Number" required="">
             <input class="text w3lpass" asp-for="Password" placeholder="Password" required="">
             <input class="text w3lpass" asp-for="ConfirmPassword" placeholder="Confirm Password" required="">
             <div class="wthree-text">
                 <label class="anim">
-                    <input asp-for="TermsAndConditions" class="checkbox" required="">
+                    <input  class="checkbox" asp-for="TermsAndConditions" required=""/>
                     <span>I Agree To The Terms & Conditions</span>
                 </label>
                 <div class="clear"> </div>

@@ -170,18 +170,15 @@ namespace Company.G03.PL.Controllers
 
         #region Delete
 
-        [HttpGet]
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string? id)
             {
-            if (id is null)
-                {
-                return NotFound();
-                }
+            if (id is null) return BadRequest();
+
             var role = await _roleManager.FindByIdAsync(id);
-            if (role == null)
-                {
-                return NotFound();
-                }
+            if (role == null) return NotFound();
+
 
             await _roleManager.DeleteAsync(role);
 
