@@ -1,4 +1,4 @@
-﻿namespace Company.G03.PL.Helpers
+﻿namespace Company.G03.PL.Helpers.Email
     {
     public class Email
         {

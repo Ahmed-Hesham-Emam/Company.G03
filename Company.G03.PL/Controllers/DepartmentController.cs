@@ -39,6 +39,13 @@ namespace Company.G03.PL.Controllers
             return View(department);
             }
 
+        public async Task<IActionResult> Search(string Search)
+            {
+            var department = await _unitOfWork.DepartmentRepository.GetByNameAsync(Search);
+
+            return PartialView("DepartmentPartialView/_DepartmentsTablePartialView", department);
+            }
+
         #region Create
 
         [HttpGet]
@@ -108,8 +115,6 @@ namespace Company.G03.PL.Controllers
             {
             if (ModelState.IsValid)
                 {
-
-
                 var Department = _mapper.Map<Department>(model);
                 _unitOfWork.DepartmentRepository.Update(Department);
                 var count = await _unitOfWork.CompleteAsync();
@@ -125,25 +130,30 @@ namespace Company.G03.PL.Controllers
 
         #region Delete
 
-        [HttpGet]
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
             {
-            if (id == null)
-                {
-                return NotFound();
-                }
+            if (id == null) return BadRequest();
             var department = await _unitOfWork.DepartmentRepository.GetAsync(id.Value);
-            if (department == null)
+            if (department == null) return NotFound();
+            try
                 {
-                return NotFound();
+                _unitOfWork.DepartmentRepository.Delete(department);
+                var count = await _unitOfWork.CompleteAsync();
+
+                if (count > 0)
+                    return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("", "Something went wrong");
                 }
-            _unitOfWork.DepartmentRepository.Delete(department);
-            await _unitOfWork.CompleteAsync();
+            catch (Exception ex)
+                {
+                return BadRequest(ex.Message);
+                }
             return RedirectToAction(nameof(Index));
             }
 
         #endregion
-
         }
     }
 

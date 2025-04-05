@@ -85,7 +85,7 @@ namespace Company.G03.PL.Controllers
             {
             if (id is null)
                 {
-                return NotFound(new { StatusCode = 404, message = $"Employee with ID: {id} is not found" });
+                return NotFound(new { StatusCode = 404, message = $"User with ID: {id} is not found" });
                 }
             var user = _userManager.FindByIdAsync(id).Result;
             if (user == null)
@@ -141,12 +141,13 @@ namespace Company.G03.PL.Controllers
 
         #region Delete
 
-        [HttpGet]
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string? id)
             {
             if (id is null)
                 {
-                return NotFound();
+                return BadRequest();
                 }
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)

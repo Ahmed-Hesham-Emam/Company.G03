@@ -5,7 +5,12 @@ using Company.G03.BLL.Repositories;
 using Company.G03.DAL.Data.Contexts;
 using Company.G03.DAL.Entities;
 using Company.G03.PL.AutoMapper;
+using Company.G03.PL.Helpers.Email;
+using Company.G03.PL.Helpers.SMS;
 using Company.G03.PL.Services;
+using Company.G03.PL.Settings;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +22,7 @@ namespace Company.G03.PL
             {
             var builder = WebApplication.CreateBuilder(args);
 
+            #region Models
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allowing the DI container to create the instance of DepartmentRepository
@@ -27,21 +33,41 @@ namespace Company.G03.PL
                             .AddEntityFrameworkStores<CompanyDbContext>()
                             .AddDefaultTokenProviders();
 
-
             builder.Services.AddAutoMapper(typeof(EmployeeProfile));
 
-            //builder.Services.AddAutoMapper(m => m.AddProfile(new EmployeeProfile()));
+            #endregion
+
+            #region Mail
+
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(nameof(EmailSettings))); // Bind the EmailSettings section of the configuration to the EmailSettings class
+            builder.Services.AddScoped<IEmailService, MailService>(); // Allowing the DI container to create the instance of MailService
+
+            #endregion
+
+            #region Twilio
+
+            builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection(nameof(TwilioSettings))); // Bind the TwilioSettings section of the configuration to the TwilioSettings class
+
+            builder.Services.AddScoped<ITwilioService, TwilioService>(); // Allowing the DI container to create the instance of TwilioService
+
+            #endregion
+
+            #region DB_Connection
 
             builder.Services.AddDbContext<CompanyDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             }); // Allowing the DI container to create the instance of CompanyDbContext
 
-            //Lifetime services
+            #endregion
+
+            #region Lifetime services
+
             builder.Services.AddScoped<IScopedServices, ScopedServices>(); // Per request
             builder.Services.AddTransient<ITransientServices, TransientServices>(); // per operation
             builder.Services.AddSingleton<ISingletonServices, SingletonServices>(); // per application
 
+            #endregion
 
             #region PathChanges
 
@@ -49,8 +75,42 @@ namespace Company.G03.PL
             {
                 options.LoginPath = "/Account/SignIn";
                 options.LogoutPath = "/Account/SignOut";
+                options.AccessDeniedPath = "/Account/AccessDenied";
             });
 
+            #endregion
+
+            #region Auth
+
+            #region Google
+            builder.Services.AddAuthentication(o =>
+    {
+        o.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
+        o.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    }).AddGoogle(o =>
+        {
+            o.ClientId = builder.Configuration["Auth:Google:ClientId"];
+            o.ClientSecret = builder.Configuration["Auth:Google:ClientSecret"];
+        }
+        );
+            #endregion
+
+            #region Facebook
+
+            builder.Services.AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = FacebookDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = FacebookDefaults.AuthenticationScheme;
+            }).AddFacebook(o =>
+            {
+                o.ClientId = builder.Configuration["Auth:Facebook:ClientId"];
+                o.ClientSecret = builder.Configuration["Auth:Facebook:ClientSecret"];
+            }
+    );
+
+            #endregion
+
+            #endregion
             var app = builder.Build(); // Create an instance of the application
 
             // Configure the HTTP request pipeline.

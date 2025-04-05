@@ -16,7 +16,7 @@
 
 <form class="my-3">
     <div class="d-flex align-items-center justify-content-start">
-        <input name="Search" placeholder="Search by name" class="form-control w-50 me-3"/>
+        <input name="Search" id="searchInp" placeholder="Search by name" class="form-control w-50 me-3"/>
         <input type="submit" value="Search" class="btn btn-primary" />
     </div>
 </form>
@@ -96,3 +96,27 @@
         }
 
 </div>
+
+
+    <script>
+        $(document).ready(function () {
+        const searchBar = $('#searchInp');
+        const table = $('table');
+
+        searchBar.on('keyup', function (event) {
+            var searchValue = searchBar.val();
+
+        $.ajax({
+            url: '/Employee/Search',
+        type: 'Get',
+        data: {Search: searchValue },
+        success: function (result) {
+            table.html(result);
+                },
+        error: function (xhr, status, error) {
+            console.log(error);
+                }
+            });
+        });
+    });
+</script>

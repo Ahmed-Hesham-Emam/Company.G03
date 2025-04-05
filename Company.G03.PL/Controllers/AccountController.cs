@@ -1,6 +1,10 @@
 ﻿using Company.G03.DAL.Entities;
 using Company.G03.PL.Dtos;
-using Company.G03.PL.Helpers;
+using Company.G03.PL.Helpers.Email;
+using Company.G03.PL.Helpers.SMS;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -11,11 +15,16 @@ namespace Company.G03.PL.Controllers
         {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly IEmailService _emailService;
+        private readonly ITwilioService _twilioService;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IEmailService emailService, ITwilioService twilioService)
             {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
+            _twilioService = twilioService;
             }
 
         #region SignUp
@@ -45,6 +54,7 @@ namespace Company.G03.PL.Controllers
                             FirstName = model.FirstName,
                             LastName = model.LastName,
                             Email = model.Email,
+                            PhoneNumber = model.PhoneNumber,
                             TermsAndConditions = model.TermsAndConditions
                             };
 
@@ -65,8 +75,6 @@ namespace Company.G03.PL.Controllers
                     }
 
                 ModelState.AddModelError("", "Invalid Register Data!");
-
-
 
                 }
 
@@ -126,12 +134,13 @@ namespace Company.G03.PL.Controllers
         #endregion
 
         #region PasswordReset
-
         [HttpGet]
         public IActionResult ForgotPassword()
             {
             return View();
             }
+
+        #region Email
 
         [HttpPost]
         public async Task<IActionResult> SendResetPasswordUrl(ForgotPasswordDto model)
@@ -139,6 +148,7 @@ namespace Company.G03.PL.Controllers
             if (ModelState.IsValid)
                 {
                 var user = await _userManager.FindByEmailAsync(model.Email);
+
                 if (user is not null)
                     {
                     // Token Generation
@@ -147,7 +157,7 @@ namespace Company.G03.PL.Controllers
                     // URL Creation
                     var url = Url.Action("ResetPassword", "Account", new { email = model.Email, token }, Request.Scheme);
 
-
+                    // Email Creation
                     var email = new Email()
                         {
                         EmailAddress = model.Email,
@@ -155,21 +165,65 @@ namespace Company.G03.PL.Controllers
                         Body = url
                         };
 
-                    var flag = EmailSettings.SendEmail(email);
+                    //var flag = EmailSettings.SendEmail(email);
+                    _emailService.SendEmail(email);
 
-                    if (flag)
-                        {
-                        return RedirectToAction("CheckInbox");
-                        }
+                    return RedirectToAction("CheckInbox");
+
                     }
+                ModelState.AddModelError("", "Process Failed SUCCESSFULLY !");
                 }
-            ModelState.AddModelError("", "Process Failed SUCCESSFULLY !");
 
             return View("ForgotPassword", model);
             }
 
+        #endregion
+
+        #region SMS
+
+        [HttpPost]
+        public async Task<IActionResult> SendResetPasswordUrlSms(ForgotPasswordDto model)
+            {
+            if (ModelState.IsValid)
+                {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user is not null)
+                    {
+                    // Token Generation
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                    // URL Creation
+                    var url = Url.Action("ResetPassword", "Account", new { email = model.Email, token }, Request.Scheme);
+
+                    // SMS Creation
+                    var sms = new Sms()
+                        {
+                        To = user.PhoneNumber,
+                        body = url
+                        };
+
+                    _twilioService.SendMessage(sms);
+
+                    return RedirectToAction("CheckSms");
+
+                    }
+                ModelState.AddModelError("", "Process Failed SUCCESSFULLY !");
+                }
+
+            return View("ForgotPassword", model);
+            }
+
+        #endregion
+
         [HttpGet]
         public IActionResult CheckInbox()
+            {
+            return View();
+            }
+
+        [HttpGet]
+        public IActionResult CheckSms()
             {
             return View();
             }
@@ -214,5 +268,64 @@ namespace Company.G03.PL.Controllers
 
         #endregion
 
+        public IActionResult AccessDenied()
+            {
+            return View();
+            }
+
+        #region Google
+        public IActionResult GoogleLogin()
+            {
+            var prop = new AuthenticationProperties()
+                {
+                RedirectUri = Url.Action("GoogleResponse")
+                };
+            return Challenge(prop, GoogleDefaults.AuthenticationScheme);
+            }
+
+        public async Task<IActionResult> GoogleResponse()
+            {
+            var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            var claims = result.Principal.Identities.FirstOrDefault().Claims.Select(
+                claim => new
+                    {
+                    claim.Type,
+                    claim.Value,
+                    claim.Issuer,
+                    claim.OriginalIssuer,
+                    }
+                );
+            return RedirectToAction("Index", "Home");
+            }
+
+        #endregion
+
+        #region Facebook
+
+        public IActionResult FacebookLogin()
+            {
+            var prop = new AuthenticationProperties()
+                {
+                RedirectUri = Url.Action("FacebookResponse")
+                };
+            return Challenge(prop, FacebookDefaults.AuthenticationScheme);
+            }
+
+        public async Task<IActionResult> FacebookResponse()
+            {
+            var result = await HttpContext.AuthenticateAsync(FacebookDefaults.AuthenticationScheme);
+            var claims = result.Principal.Identities.FirstOrDefault().Claims.Select(
+                claim => new
+                    {
+                    claim.Type,
+                    claim.Value,
+                    claim.Issuer,
+                    claim.OriginalIssuer,
+                    }
+                );
+            return RedirectToAction("Index", "Home");
+            }
+
+        #endregion
         }
     }

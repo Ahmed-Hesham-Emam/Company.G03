@@ -54,6 +54,23 @@ namespace Company.G03.PL.Controllers
             return View(employees);
             }
 
+        public async Task<IActionResult> Search(string Search)
+            {
+            var employees = await _unitOfWork.EmployeeRepository.GetByNameAsync(Search);
+            foreach (var employee in employees)
+                {
+                string imageFileName = employee.ImageName ?? "NoImage.webp";
+                string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", "Imgs", imageFileName);
+
+                // If file does not exist, use "NoImage.webp"
+                if (!System.IO.File.Exists(imagePath) || employee.ImageName is null)
+                    {
+                    employee.ImageName = "NoImage.webp";
+                    }
+                }
+            return PartialView("EmployeePartialView/_EmployeesTablePartialView", employees);
+            }
+
         #region Create
 
         [HttpGet]
@@ -165,26 +182,32 @@ namespace Company.G03.PL.Controllers
 
         #region Delete
 
-        [HttpGet]
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
             {
-            if (id is null)
-                {
-                return NotFound();
-                }
+            if (id == null) return BadRequest();
             var employee = await _unitOfWork.EmployeeRepository.GetAsync(id.Value);
-            if (employee == null)
+            if (employee == null) return NotFound();
+            try
                 {
-                return NotFound();
+                _unitOfWork.EmployeeRepository.Delete(employee);
+                var count = await _unitOfWork.CompleteAsync();
+
+                if (count > 0)
+                    return RedirectToAction(nameof(Index));
+
+                ModelState.AddModelError("", "Something went wrong");
                 }
-            _unitOfWork.EmployeeRepository.Delete(employee);
-            await _unitOfWork.CompleteAsync();
-            if (employee.ImageName is not null)
+            catch (Exception ex)
                 {
-                AttachmentSettings.DeleteFile("Imgs", employee.ImageName);
+                return BadRequest(ex.Message);
                 }
             return RedirectToAction(nameof(Index));
+
             }
+
 
         #endregion
         }
