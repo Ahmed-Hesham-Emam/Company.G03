@@ -22,6 +22,8 @@ namespace Company.G03.PL.Controllers
             _userManager = userManager;
             }
 
+        #region Index
+
         public IActionResult Index(string? Search)
             {
             IEnumerable<ReturnRoleDto> Roles;
@@ -44,6 +46,36 @@ namespace Company.G03.PL.Controllers
 
             return View(Roles);
             }
+
+        #endregion
+
+        #region Search
+
+        public async Task<IActionResult> Search(string Search)
+            {
+
+            IEnumerable<ReturnRoleDto> Roles;
+            if (string.IsNullOrEmpty(Search))
+                {
+                Roles = _roleManager.Roles.Select(u => new ReturnRoleDto()
+                    {
+                    Id = u.Id,
+                    Name = u.Name
+                    });
+                }
+            else
+                {
+                Roles = _roleManager.Roles.Select(u => new ReturnRoleDto()
+                    {
+                    Id = u.Id,
+                    Name = u.Name,
+                    }).Where(u => u.Name.ToLower().Contains(Search.ToLower()));
+                }
+
+            return PartialView("RolePartialView/_RoleTablePartialView", Roles);
+            }
+
+        #endregion
 
         #region Create
 

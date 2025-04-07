@@ -3,10 +3,12 @@ using Company.G03.PL.Dtos;
 using Company.G03.PL.Helpers.Email;
 using Company.G03.PL.Helpers.SMS;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Company.G03.PL.Controllers
@@ -101,6 +103,13 @@ namespace Company.G03.PL.Controllers
 
                 if (User is not null)
                     {
+                    if (await _userManager.IsLockedOutAsync(User))
+                        {
+                        var Lockout = await _userManager.GetLockoutEnabledAsync(User);
+                        ModelState.AddModelError("", $"Your account is locked out for {Lockout}, please try again later.");
+                        return View(model);
+
+                        }
                     var flag = await _userManager.CheckPasswordAsync(User, model.Password);
 
                     if (flag)
@@ -268,10 +277,14 @@ namespace Company.G03.PL.Controllers
 
         #endregion
 
+        #region AccessDenied
+
         public IActionResult AccessDenied()
             {
             return View();
             }
+
+        #endregion
 
         #region Google
         public IActionResult GoogleLogin()
@@ -295,6 +308,22 @@ namespace Company.G03.PL.Controllers
                     claim.OriginalIssuer,
                     }
                 );
+            var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var FirstName = result.Principal.FindFirst(ClaimTypes.GivenName)?.Value;
+            var LastName = result.Principal.FindFirst(ClaimTypes.Surname)?.Value;
+            var UserName = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
+            var phoneNumber = result.Principal.FindFirst(ClaimTypes.MobilePhone)?.Value;
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                {
+                user = new AppUser { UserName = UserName, Email = email, FirstName = FirstName, LastName = LastName, PhoneNumber = phoneNumber, TermsAndConditions = true };
+                await _userManager.CreateAsync(user);
+                }
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
             return RedirectToAction("Index", "Home");
             }
 
@@ -323,9 +352,33 @@ namespace Company.G03.PL.Controllers
                     claim.OriginalIssuer,
                     }
                 );
+
+            var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var FirstName = result.Principal.FindFirst(ClaimTypes.GivenName)?.Value;
+            var LastName = result.Principal.FindFirst(ClaimTypes.Surname)?.Value;
+            var UserName = result.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var phoneNumber = result.Principal.FindFirst(ClaimTypes.MobilePhone)?.Value;
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                {
+                user = new AppUser { UserName = UserName, Email = email, FirstName = FirstName, LastName = LastName, PhoneNumber = phoneNumber, TermsAndConditions = true };
+                await _userManager.CreateAsync(user);
+                }
+
+
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+
+
+
+
             return RedirectToAction("Index", "Home");
             }
 
         #endregion
+
         }
     }

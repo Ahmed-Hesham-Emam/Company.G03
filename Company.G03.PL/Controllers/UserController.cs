@@ -17,6 +17,8 @@ namespace Company.G03.PL.Controllers
             _userManager = userManager;
             }
 
+        #region Index
+
         public IActionResult Index(string? Search)
             {
             IEnumerable<ReturnUserDto> users;
@@ -48,6 +50,42 @@ namespace Company.G03.PL.Controllers
             return View(users);
             }
 
+        #endregion
+
+        #region Search
+
+        public async Task<IActionResult> Search(string Search)
+            {
+            IEnumerable<ReturnUserDto> users;
+            if (string.IsNullOrEmpty(Search))
+                {
+                users = _userManager.Users.Select(u => new ReturnUserDto()
+                    {
+                    Id = u.Id,
+                    UserName = u.UserName,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Roles = _userManager.GetRolesAsync(u).Result
+                    });
+                }
+            else
+                {
+                users = _userManager.Users.Select(u => new ReturnUserDto()
+                    {
+                    Id = u.Id,
+                    UserName = u.UserName,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Roles = _userManager.GetRolesAsync(u).Result
+                    }).Where(u => u.FirstName.ToLower().Contains(Search.ToLower()));
+                }
+
+            return PartialView("UserPartialView/_UserTablePartialView", users);
+            }
+
+        #endregion
 
         #region Details
 
