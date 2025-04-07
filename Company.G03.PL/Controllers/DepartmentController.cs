@@ -24,6 +24,8 @@ namespace Company.G03.PL.Controllers
             }
 
 
+        #region Index
+
         [HttpGet]
         public async Task<IActionResult> Index(string? Search)
             {
@@ -39,6 +41,10 @@ namespace Company.G03.PL.Controllers
             return View(department);
             }
 
+        #endregion
+
+        #region Search
+
         public async Task<IActionResult> Search(string Search)
             {
             IEnumerable<Department> department;
@@ -53,6 +59,8 @@ namespace Company.G03.PL.Controllers
 
             return PartialView("DepartmentPartialView/_DepartmentsTablePartialView", department);
             }
+
+        #endregion
 
         #region Create
 

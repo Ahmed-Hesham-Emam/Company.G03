@@ -26,6 +26,7 @@ namespace Company.G03.PL.Controllers
             _mapper = mapper;
             }
 
+        #region Index
 
         public async Task<IActionResult> Index(string? Search)
             {
@@ -54,6 +55,10 @@ namespace Company.G03.PL.Controllers
             return View(employees);
             }
 
+        #endregion
+
+        #region Search
+
         public async Task<IActionResult> Search(string Search)
             {
             IEnumerable<Employee> employees;
@@ -78,6 +83,8 @@ namespace Company.G03.PL.Controllers
                 }
             return PartialView("EmployeePartialView/_EmployeesTablePartialView", employees);
             }
+
+        #endregion
 
         #region Create
 

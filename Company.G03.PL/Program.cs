@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Company.G03.PL
     {
@@ -30,11 +31,40 @@ namespace Company.G03.PL
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Allowing the DI container to create the instance of EmployeeRepository
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Allowing the DI container to create the instance of UnitOfWork
 
-            builder.Services.AddIdentity<AppUser, IdentityRole>()
-                            .AddEntityFrameworkStores<CompanyDbContext>()
-                            .AddDefaultTokenProviders();
+
 
             builder.Services.AddAutoMapper(typeof(EmployeeProfile));
+
+            #endregion
+
+            #region AppUser
+
+            builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+            {
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Lockout duration of 5 minutes
+                options.Lockout.MaxFailedAccessAttempts = 5; // Maximum failed access attempts before lockout
+                // User settings
+                options.User.RequireUniqueEmail = true; // Require unique email addresses for users
+
+            })
+    .AddEntityFrameworkStores<CompanyDbContext>()
+    .AddDefaultTokenProviders();
+
+            //builder.Services.ConfigureApplicationCookie(options =>
+            //{
+            //    options.LoginPath = "/Account/SignIn"; // Redirect to this path if the user is not authenticated
+            //    options.ExpireTimeSpan = TimeSpan.FromDays(30); // Set the expiration time for the authentication cookie
+            //    options.LogoutPath = "/Account/SignOut"; // Redirect to this path when the user logs out
+            //    options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to this path if access is denied
+            //});
+
 
             #endregion
 
@@ -53,31 +83,34 @@ namespace Company.G03.PL
 
             #endregion
 
-            #region DB_Connection & Auth
+            #region DB_Connection
 
             builder.Services.AddDbContext<CompanyDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            }).AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            }).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            });
+
+            #endregion
+
+            #region Auth
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
                 options.LoginPath = "/Account/SignIn"; // Redirect to this path if the user is not authenticated
-                options.ExpireTimeSpan = TimeSpan.FromDays(30); // Set the expiration time for the authentication cookie
+                options.ExpireTimeSpan = TimeSpan.FromDays(1); // Set the expiration time for the authentication cookie
                 options.LogoutPath = "/Account/SignOut"; // Redirect to this path when the user logs out
                 options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to this path if access is denied
-            })
-            .AddGoogle(options =>
+            }).AddGoogle(options =>
             {
-                options.ClientId = builder.Configuration["Auth:Google:ClientId"]; // Google Client ID
-                options.ClientSecret = builder.Configuration["Auth:Google:ClientSecret"]; // Google Client Secret
+                IConfiguration GoogleAuth = builder.Configuration.GetSection("Auth:Google"); // Get the Google authentication settings from the configuration
+                options.ClientId = GoogleAuth["ClientId"];// Google Client ID
+                options.ClientSecret = GoogleAuth["ClientSecret"]; // Google Client Secret
             }).AddFacebook(options =>
             {
-                options.AppId = builder.Configuration["Auth:Facebook:ClientId"]; // Facebook App ID
-                options.AppSecret = builder.Configuration["Auth:Facebook:ClientSecret"]; // Facebook App Secret
+                IConfiguration FacebookAuth = builder.Configuration.GetSection("Auth:Facebook"); // Get the Facebook authentication settings from the configuration
+                options.ClientId = FacebookAuth["ClientId"]; // Facebook Client ID
+                options.ClientSecret = FacebookAuth["ClientSecret"]; // Facebook Client Secret
             });
 
             #endregion
