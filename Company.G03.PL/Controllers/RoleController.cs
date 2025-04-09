@@ -1,10 +1,13 @@
-﻿using Company.G03.DAL.Entities;
+﻿using Company.G03.BLL.Interfaces;
+using Company.G03.BLL.Repositories;
+using Company.G03.DAL.Entities;
 using Company.G03.PL.Dtos;
 using Company.G03.PL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace Company.G03.PL.Controllers
@@ -15,18 +18,19 @@ namespace Company.G03.PL.Controllers
 
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IPermissionRepository _permissionManager;
 
-        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<AppUser> userManager)
+        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<AppUser> userManager, IPermissionRepository permissionManager)
             {
             _roleManager = roleManager;
             _userManager = userManager;
+            _permissionManager = permissionManager;
             }
-
         #region Index
-
-        public IActionResult Index(string? Search)
+        public async Task<IActionResult> Index(string? Search)
             {
             IEnumerable<ReturnRoleDto> Roles;
+
             if (string.IsNullOrEmpty(Search))
                 {
                 Roles = _roleManager.Roles.Select(u => new ReturnRoleDto()
@@ -34,14 +38,18 @@ namespace Company.G03.PL.Controllers
                     Id = u.Id,
                     Name = u.Name
                     });
+
                 }
             else
                 {
-                Roles = _roleManager.Roles.Select(u => new ReturnRoleDto()
-                    {
-                    Id = u.Id,
-                    Name = u.Name,
-                    }).Where(u => u.Name.ToLower().Contains(Search.ToLower()));
+                Roles = _roleManager.Roles
+                    .Where(u => u.Name.ToLower().Contains(Search.ToLower()))
+                    .Select(u => new ReturnRoleDto()
+                        {
+                        Id = u.Id,
+                        Name = u.Name
+                        });
+
                 }
 
             return View(Roles);
@@ -55,6 +63,7 @@ namespace Company.G03.PL.Controllers
             {
 
             IEnumerable<ReturnRoleDto> Roles;
+
             if (string.IsNullOrEmpty(Search))
                 {
                 Roles = _roleManager.Roles.Select(u => new ReturnRoleDto()
@@ -62,6 +71,7 @@ namespace Company.G03.PL.Controllers
                     Id = u.Id,
                     Name = u.Name
                     });
+
                 }
             else
                 {
@@ -70,6 +80,7 @@ namespace Company.G03.PL.Controllers
                     Id = u.Id,
                     Name = u.Name,
                     }).Where(u => u.Name.ToLower().Contains(Search.ToLower()));
+
                 }
 
             return PartialView("RolePartialView/_RoleTablePartialView", Roles);
@@ -80,36 +91,45 @@ namespace Company.G03.PL.Controllers
         #region Create
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
             {
-            return View();
+            var allPermissions = await _permissionManager.GetAllPermissionsAsync(); // Get list of all permissions
+            var model = new ReturnRoleDto
+                {
+                UnassignedPermissions = allPermissions.Select(p => p.Name).ToList(),
+                AssignedPermissions = new List<string>()
+                };
+            return View(model);
             }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ReturnRoleDto model)
             {
-            if (ModelState.IsValid) //server side validation
+            if (ModelState.IsValid)
                 {
-
-                var role = await _roleManager.FindByNameAsync(model.Name);
-                if (role is null)
+                var roleExists = await _roleManager.FindByNameAsync(model.Name);
+                if (roleExists is null)
                     {
-                    role = new IdentityRole()
-                        {
-                        Name = model.Name
-                        };
-                    var result = await _roleManager.CreateAsync(role);
+                    var newRole = new IdentityRole { Name = model.Name };
+                    var result = await _roleManager.CreateAsync(newRole);
+
                     if (result.Succeeded)
                         {
+                        // Assign permissions
+                        await _permissionManager.UpdateRolePermissionsAsync(newRole.Id, model.AssignedPermissions);
+                        TempData["Message"] = "Role created successfully!";
                         return RedirectToAction(nameof(Index));
                         }
-
                     }
-                ModelState.AddModelError("", "Role already exists");
 
-
+                ModelState.AddModelError("", "Role already exists.");
                 }
+
+            // Refill unassigned permissions in case of model error
+            var allPermissions = await _permissionManager.GetAllPermissionsAsync();
+            model.UnassignedPermissions = allPermissions.Select(p => p.Name).Except(model.AssignedPermissions).ToList();
+
             return View(model);
             }
 
@@ -143,22 +163,29 @@ namespace Company.G03.PL.Controllers
         #region Update
 
         [HttpGet]
-        public IActionResult Edit(string? id)
+        public async Task<IActionResult> Edit(string? id)
             {
             if (id is null)
                 {
-                return NotFound(new { StatusCode = 404, message = $"Employee with ID: {id} is not found" });
+                return NotFound(new { StatusCode = 404, message = $"Role with ID: {id} is not found" });
                 }
-            var role = _roleManager.FindByIdAsync(id).Result;
-            if (role == null)
+
+            var role = await _roleManager.FindByIdAsync(id);
+            if (role is null)
                 {
                 return NotFound();
                 }
-            var roleDto = new ReturnRoleDto()
+
+            var (assignedPermissions, unassignedPermissions) = await _permissionManager.GetPermissionNamesByRoleAsync(role.Id);
+
+            var roleDto = new ReturnRoleDto
                 {
                 Id = role.Id,
-                Name = role.Name
+                Name = role.Name,
+                AssignedPermissions = assignedPermissions,
+                UnassignedPermissions = unassignedPermissions
                 };
+
             return View(roleDto);
 
             }
@@ -168,36 +195,50 @@ namespace Company.G03.PL.Controllers
         public async Task<IActionResult> Edit([FromRoute] string id, ReturnRoleDto model)
             {
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 {
-                if (id != model.Id)
-                    {
-                    return BadRequest("Invalid Operation");
-                    }
-                var role = await _roleManager.FindByIdAsync(id);
-                if (role is null)
-                    {
-                    return BadRequest("Invalid Operation");
-                    }
-
-                var Result = await _roleManager.FindByNameAsync(model.Name);
-                if (Result is null)
-                    {
-                    role.Id = model.Id;
-                    role.Name = model.Name;
-
-                    var result = await _roleManager.UpdateAsync(role);
-
-                    if (result.Succeeded)
-                        {
-                        return RedirectToAction(nameof(Index));
-                        }
-                    }
-                ModelState.AddModelError("", "Invalid Operation");
-
+                return View(model);
                 }
+
+            if (id != model.Id)
+                {
+                return BadRequest("Invalid Operation");
+                }
+
+            var role = await _roleManager.FindByIdAsync(id);
+            if (role is null)
+                {
+                return BadRequest("Role not found.");
+                }
+
+            // Check for duplicate role name
+            var existingRole = await _roleManager.FindByNameAsync(model.Name);
+            if (existingRole != null && existingRole.Id != id)
+                {
+                ModelState.AddModelError("", "A role with this name already exists.");
+                return View(model);
+                }
+
+            role.Name = model.Name;
+
+            // Update permissions
+            await _permissionManager.UpdateRolePermissionsAsync(role.Id, model.AssignedPermissions);
+
+            var result = await _roleManager.UpdateAsync(role);
+            if (result.Succeeded)
+                {
+                TempData["Message"] = "Role updated successfully.";
+                return RedirectToAction(nameof(Index));
+                }
+
+            foreach (var error in result.Errors)
+                {
+                ModelState.AddModelError("", error.Description);
+                }
+
             return View(model);
             }
+
         #endregion
 
         #region Delete
