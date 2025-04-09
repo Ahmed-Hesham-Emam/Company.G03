@@ -25,8 +25,7 @@ namespace Company.G03.PL
             {
             var builder = WebApplication.CreateBuilder(args);
 
-            #region Models
-            // Add services to the container.
+            #region DI
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allowing the DI container to create the instance of DepartmentRepository
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Allowing the DI container to create the instance of EmployeeRepository
@@ -34,13 +33,25 @@ namespace Company.G03.PL
             builder.Services.AddScoped<IPermissionRepository, PermissionRepository>(); // Allowing the DI container to create the instance of PermissionRepository
             builder.Services.AddScoped<IPermissionService, PermissionService>(); // Allowing the DI container to create the instance of PermissionService
 
+            #endregion
 
+            builder.Services.AddAutoMapper(typeof(EmployeeProfile)); // Registering the AutoMapper profile for mapping between DTOs and entities
 
-            builder.Services.AddAutoMapper(typeof(EmployeeProfile));
+            #region DB_Connection
+
+            builder.Services.AddDbContext<CompanyDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
 
             #endregion
 
             #region AppUser
+
+            builder.Services.Configure<IdentityOptions>(options =>
+            {
+                options.User.RequireUniqueEmail = true;// Email will be unique
+            });
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
@@ -54,8 +65,9 @@ namespace Company.G03.PL
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Lockout duration of 5 minutes
                 options.Lockout.MaxFailedAccessAttempts = 5; // Maximum failed access attempts before lockout
                 // User settings
-                options.User.RequireUniqueEmail = true; // Require unique email addresses for users
-
+                //options.User.RequireUniqueEmail = true; // Require unique email addresses for users
+                options.User.AllowedUserNameCharacters =
+                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ "; // Allowed characters for usernames
             })
     .AddEntityFrameworkStores<CompanyDbContext>()
     .AddDefaultTokenProviders();
@@ -83,15 +95,6 @@ namespace Company.G03.PL
             builder.Services.Configure<TwilioSettings>(builder.Configuration.GetSection(nameof(TwilioSettings))); // Bind the TwilioSettings section of the configuration to the TwilioSettings class
 
             builder.Services.AddScoped<ITwilioService, TwilioService>(); // Allowing the DI container to create the instance of TwilioService
-
-            #endregion
-
-            #region DB_Connection
-
-            builder.Services.AddDbContext<CompanyDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
 
             #endregion
 

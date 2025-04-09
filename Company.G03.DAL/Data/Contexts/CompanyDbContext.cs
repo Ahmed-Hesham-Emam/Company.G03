@@ -19,6 +19,11 @@ namespace Company.G03.DAL.Data.Contexts
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<AppUser>()
+                        .HasIndex(u => u.UserName)
+                        .IsUnique(false);
+
             }
 
         public DbSet<Department> Departments { get; set; }
