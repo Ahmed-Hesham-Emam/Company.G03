@@ -279,7 +279,8 @@ namespace Company.G03.PL.Controllers
                 var userInRole = new UsersInRoleViewModel()
                     {
                     UserId = user.Id,
-                    UserName = user.UserName
+                    UserName = user.UserName,
+                    Email = user.Email,
                     };
                 if (await _userManager.IsInRoleAsync(user, role.Name))
                     {
