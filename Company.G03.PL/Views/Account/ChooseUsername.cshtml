@@ -1,0 +1,26 @@
+﻿@model ChooseUsernameDto
+
+@{
+    ViewData["Title"] = "ChooseUsername";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+<<div class="main-agileinfo">
+    <div class="agileits-top">
+        <form asp-action="ChooseUsername">
+            <div class="bg-transparent border-0 alert alert-danger" asp-validation-summary="All">
+            </div>
+            <input type="hidden" asp-for="UserId" />
+            <input class="text w3lpass" asp-for="UserName" placeholder="Choose your User Name" required="">
+            <div class="wthree-text">
+                <div class="clear"> </div>
+            </div>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

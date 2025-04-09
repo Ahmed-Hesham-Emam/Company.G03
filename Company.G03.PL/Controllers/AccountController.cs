@@ -311,18 +311,39 @@ namespace Company.G03.PL.Controllers
             var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
             var FirstName = result.Principal.FindFirst(ClaimTypes.GivenName)?.Value;
             var LastName = result.Principal.FindFirst(ClaimTypes.Surname)?.Value;
-            var UserName = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
             var phoneNumber = result.Principal.FindFirst(ClaimTypes.MobilePhone)?.Value;
+            //var UserName = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
 
             var user = await _userManager.FindByEmailAsync(email);
 
+            bool isNewUser = false;
+
             if (user == null)
                 {
-                user = new AppUser { UserName = UserName, Email = email, FirstName = FirstName, LastName = LastName, PhoneNumber = phoneNumber, TermsAndConditions = true };
-                await _userManager.CreateAsync(user);
+                user = new AppUser
+                    {
+                    UserName = Guid.NewGuid().ToString(),
+                    Email = email,
+                    FirstName = FirstName,
+                    LastName = LastName,
+                    PhoneNumber = phoneNumber,
+                    TermsAndConditions = true
+                    };
+                var newResualt = await _userManager.CreateAsync(user);
+                if (!newResualt.Succeeded)
+                    {
+                    ModelState.AddModelError("", "Invalid Register Data!");
+                    return View("SignUp");
+                    }
+                //await _userManager.CreateAsync(user);
+                isNewUser = true;
                 }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
+            if (isNewUser)
+                {
+                return RedirectToAction("ChooseUsername", new { userId = user.Id });
+                }
 
             return RedirectToAction("Index", "Home");
             }
@@ -352,30 +373,78 @@ namespace Company.G03.PL.Controllers
                     claim.OriginalIssuer,
                     }
                 );
-
             var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
             var FirstName = result.Principal.FindFirst(ClaimTypes.GivenName)?.Value;
             var LastName = result.Principal.FindFirst(ClaimTypes.Surname)?.Value;
-            var UserName = result.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var phoneNumber = result.Principal.FindFirst(ClaimTypes.MobilePhone)?.Value;
+            //var UserName = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
 
             var user = await _userManager.FindByEmailAsync(email);
 
+            bool isNewUser = false;
+
             if (user == null)
                 {
-                user = new AppUser { UserName = UserName, Email = email, FirstName = FirstName, LastName = LastName, PhoneNumber = phoneNumber, TermsAndConditions = true };
-                await _userManager.CreateAsync(user);
+                user = new AppUser
+                    {
+                    UserName = Guid.NewGuid().ToString(),
+                    Email = email,
+                    FirstName = FirstName,
+                    LastName = LastName,
+                    PhoneNumber = phoneNumber,
+                    TermsAndConditions = true
+                    };
+                var newResualt = await _userManager.CreateAsync(user);
+                if (!newResualt.Succeeded)
+                    {
+                    ModelState.AddModelError("", "Invalid Register Data!");
+                    return View("SignUp");
+                    }
+                //await _userManager.CreateAsync(user);
+                isNewUser = true;
                 }
 
-
-
             await _signInManager.SignInAsync(user, isPersistent: false);
-
-
-
-
+            if (isNewUser)
+                {
+                return RedirectToAction("ChooseUsername", new { userId = user.Id });
+                }
 
             return RedirectToAction("Index", "Home");
+            }
+
+        #endregion
+
+        #region Create User Name after etxternal login for the first time
+
+        [HttpGet]
+        public async Task<IActionResult> ChooseUsername(string userId)
+            {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            return View(new ChooseUsernameDto { UserId = userId });
+            }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ChooseUsername(ChooseUsernameDto model)
+            {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null) return NotFound();
+
+            user.UserName = model.UserName;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+                return RedirectToAction("Index", "Home");
+
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
+
+            return View(model);
             }
 
         #endregion
