@@ -12,7 +12,8 @@
         {
         <div class="form-control my-2">
             <input asp-for="@Model[i].IsSelected" />
-            <label asp-for="@Model[i].IsSelected">@Model[i].UserName</label>
+            <label asp-for="@Model[i].IsSelected">User Name: @Model[i].UserName |</label>
+            <label asp-for="@Model[i].IsSelected">Email: @Model[i].Email</label>
         </div>
         <div>
             <input type="hidden" asp-for="@Model[i].UserId" hidden />
