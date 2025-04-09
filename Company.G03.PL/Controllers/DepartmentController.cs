@@ -3,6 +3,7 @@ using Company.G03.BLL.Interfaces;
 using Company.G03.BLL.Repositories;
 using Company.G03.DAL.Entities;
 using Company.G03.PL.Dtos;
+using Company.G03.PL.Helpers.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -65,6 +66,7 @@ namespace Company.G03.PL.Controllers
         #region Create
 
         [HttpGet]
+        [HasPermission("Create")]
         public IActionResult Create()
             {
             return View();
@@ -72,6 +74,8 @@ namespace Company.G03.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("Create")]
+
         public async Task<IActionResult> Create(CreateDepartmentDto model)
             {
             if (ModelState.IsValid) //server side validation
@@ -94,6 +98,7 @@ namespace Company.G03.PL.Controllers
         #region Details
 
         [HttpGet]
+        [HasPermission("View")]
         public async Task<IActionResult> Details(int? id, string viewName = "Details")
             {
             if (id == null)
@@ -113,6 +118,8 @@ namespace Company.G03.PL.Controllers
         #region Update
 
         [HttpGet]
+        [HasPermission("Update")]
+
         public async Task<IActionResult> Edit(int? id)
             {
             if (id == null) return BadRequest();
@@ -127,6 +134,8 @@ namespace Company.G03.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("Update")]
+
         public async Task<IActionResult> Edit([FromRoute] int id, CreateDepartmentDto model)
             {
             if (ModelState.IsValid)
@@ -147,7 +156,9 @@ namespace Company.G03.PL.Controllers
         #region Delete
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
+        [HasPermission("Delete")]
+
         public async Task<IActionResult> Delete(int? id)
             {
             if (id == null) return BadRequest();

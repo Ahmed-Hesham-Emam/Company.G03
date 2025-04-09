@@ -6,6 +6,7 @@ using Company.G03.DAL.Data.Contexts;
 using Company.G03.DAL.Entities;
 using Company.G03.PL.AutoMapper;
 using Company.G03.PL.Helpers.Email;
+using Company.G03.PL.Helpers.Permissions;
 using Company.G03.PL.Helpers.SMS;
 using Company.G03.PL.Services;
 using Company.G03.PL.Settings;
@@ -20,7 +21,7 @@ namespace Company.G03.PL
     {
     public class Program
         {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
             {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,8 @@ namespace Company.G03.PL
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allowing the DI container to create the instance of DepartmentRepository
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>(); // Allowing the DI container to create the instance of EmployeeRepository
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Allowing the DI container to create the instance of UnitOfWork
+            builder.Services.AddScoped<IPermissionRepository, PermissionRepository>(); // Allowing the DI container to create the instance of PermissionRepository
+            builder.Services.AddScoped<IPermissionService, PermissionService>(); // Allowing the DI container to create the instance of PermissionService
 
 
 
@@ -167,6 +170,14 @@ namespace Company.G03.PL
             #endregion
 
             var app = builder.Build(); // Create an instance of the application
+
+            using (var scope = app.Services.CreateScope())
+                {
+                var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<CompanyDbContext>();
+                await PermissionSeeder.SeedPermissionsAsync(context);
+                }
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

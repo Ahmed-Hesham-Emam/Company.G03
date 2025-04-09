@@ -4,5 +4,8 @@
         {
         public string? Id { get; set; }
         public string Name { get; set; }
+
+        public List<string>? AssignedPermissions { get; set; } = new();
+        public List<string>? UnassignedPermissions { get; set; } = new();
         }
     }

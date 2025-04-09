@@ -26,7 +26,7 @@
 </div>
 
 
-<div class="justify-content-center align-items-center text-center overflow-y-auto">
+<div class="justify-content-center align-items-center text-center overflow-auto">
     @if (Model.Count() > 0)
         {
         <div class="h-50">
@@ -58,7 +58,10 @@
                         {
                         <tr class="align-middle text-center">
                             <td> @index </td>
-                            <td><img src="~/Files/Imgs/@employee.ImageName" class="img-thumbnail object-fit-cover rounded-circle" style="max-width: 90px; max-height: 90px; aspect-ratio:1/1" /></td>
+
+                            <td>
+                                <img src="~/Files/Imgs/@employee.ImageName" class="img-thumbnail object-fit-cover rounded-circle" style="max-width: 90px; max-height: 90px; aspect-ratio:1/1" />
+                            </td>
 
                             <td>@employee.Name</td>
                             <td>@employee.Age</td>

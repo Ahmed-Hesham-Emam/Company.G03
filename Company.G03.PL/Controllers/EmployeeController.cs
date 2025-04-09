@@ -4,6 +4,7 @@ using Company.G03.BLL.Repositories;
 using Company.G03.DAL.Entities;
 using Company.G03.PL.Dtos;
 using Company.G03.PL.Helpers;
+using Company.G03.PL.Helpers.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
@@ -89,6 +90,7 @@ namespace Company.G03.PL.Controllers
         #region Create
 
         [HttpGet]
+        [HasPermission("Create")]
         public async Task<IActionResult> Create()
             {
             var departments = await _unitOfWork.DepartmentRepository.GetAllAsync();
@@ -98,6 +100,7 @@ namespace Company.G03.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("Create")]
         public async Task<IActionResult> Create(CreateEmployeeDto model)
             {
             if (ModelState.IsValid) //server side validation
@@ -127,6 +130,7 @@ namespace Company.G03.PL.Controllers
         #region Details
 
         [HttpGet]
+        [HasPermission("View")]
         public async Task<IActionResult> Details(int? id, string viewName = "Details")
             {
             if (id is null)
@@ -139,6 +143,15 @@ namespace Company.G03.PL.Controllers
                 {
                 return NotFound();
                 }
+            string imageFileName = employee.ImageName ?? "NoImage.webp";
+            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", "Imgs", imageFileName);
+
+            // If file does not exist, use "NoImage.webp"
+            if (!System.IO.File.Exists(imagePath) || employee.ImageName is null)
+                {
+                employee.ImageName = "NoImage.webp";
+                }
+
             return View(viewName, employee);
             }
 
@@ -147,6 +160,7 @@ namespace Company.G03.PL.Controllers
         #region Update
 
         [HttpGet]
+        [HasPermission("Update")]
         public async Task<IActionResult> Edit(int? id)
             {
             if (id is null)
@@ -167,6 +181,7 @@ namespace Company.G03.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [HasPermission("Update")]
         public async Task<IActionResult> Edit([FromRoute] int id, CreateEmployeeDto model)
             {
             var departments = await _unitOfWork.DepartmentRepository.GetAllAsync();
@@ -197,9 +212,9 @@ namespace Company.G03.PL.Controllers
 
         #region Delete
 
-
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [HasPermission("Delete")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
             {
             if (id == null) return BadRequest();

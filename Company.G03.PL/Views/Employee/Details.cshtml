@@ -5,7 +5,14 @@
 
 <h1>Employee Details</h1>
 
-<div class="my-5">
+<div class="my-5 d-flex flex-column">
+    @{ 
+        var employeeImage = Model.ImageName;
+    }
+
+    <div class=" mb-5 align-self-center">
+        <img src="~/Files/Imgs/@employeeImage" class="img-thumbnail object-fit-cover rounded-circle" style="max-width: 150px; max-height: 150px; aspect-ratio:1/1" />
+    </div>
 
     <div class="form-floating mb-3">
         <input type="text" asp-for="Name" class="form-control" placeholder="Name" readonly />
@@ -56,7 +63,7 @@
         <input asp-for="CreatedAt" class="form-control" placeholder="CreatedAt" disabled />
         <label asp-for="CreatedAt"></label>
     </div>
-    @if (Model.Department !=null)
+    @if (Model.Department != null)
         {
         <div class="form-floating mb-3">
             <input asp-for="Department.Name" class="form-control" placeholder="Department" disabled />
