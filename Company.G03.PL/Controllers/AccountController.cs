@@ -448,7 +448,7 @@ namespace Company.G03.PL.Controllers
                 if (!await _userManager.IsInRoleAsync(user, "User"))
                     {
                     await _userManager.AddToRoleAsync(user, "User");
-                    await _signInManager.SignInAsync(user, isPersistent: false);  // Sign in with updated data
+                    await _signInManager.SignInAsync(user, isPersistent: false);
                     }
 
                 await _signInManager.RefreshSignInAsync(user);

@@ -101,14 +101,23 @@ namespace Company.G03.PL
 
             #region Auth
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/SignIn";
+                options.LogoutPath = "/Account/SignOut";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+                options.ExpireTimeSpan = TimeSpan.FromDays(1);
+                options.SlidingExpiration = true;
+            });
+
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
-                options.LoginPath = "/Account/SignIn"; // Redirect to this path if the user is not authenticated
-                options.ExpireTimeSpan = TimeSpan.FromDays(1); // Set the expiration time for the authentication cookie
-                options.SlidingExpiration = true; // Enable sliding expiration
-                options.LogoutPath = "/Account/SignOut"; // Redirect to this path when the user logs out
-                options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to this path if access is denied
+                //options.LoginPath = "/Account/SignIn"; // Redirect to this path if the user is not authenticated
+                //options.LogoutPath = "/Account/SignOut"; // Redirect to this path when the user logs out
+                //options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to this path if access is denied
+                //options.ExpireTimeSpan = TimeSpan.FromDays(1); // Set the expiration time for the authentication cookie
+                //options.SlidingExpiration = true; // Enable sliding expiration
             }).AddGoogle(options =>
             {
                 IConfiguration GoogleAuth = builder.Configuration.GetSection("Auth:Google"); // Get the Google authentication settings from the configuration
