@@ -327,7 +327,7 @@ namespace Company.G03.PL.Controllers
                     FirstName = FirstName,
                     LastName = LastName,
                     PhoneNumber = phoneNumber,
-                    TermsAndConditions = true
+                    TermsAndConditions = true,
                     };
                 var newResualt = await _userManager.CreateAsync(user);
                 if (!newResualt.Succeeded)
@@ -415,7 +415,7 @@ namespace Company.G03.PL.Controllers
 
         #endregion
 
-        #region Create User Name after etxternal login for the first time
+        #region Create Username and password after etxternal login for the first time
 
         [HttpGet]
         public async Task<IActionResult> ChooseUsername(string userId)
@@ -436,6 +436,7 @@ namespace Company.G03.PL.Controllers
             if (user == null) return NotFound();
 
             user.UserName = model.UserName;
+
 
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)

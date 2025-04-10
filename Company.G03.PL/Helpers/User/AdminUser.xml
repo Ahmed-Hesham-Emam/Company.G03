@@ -1,0 +1,20 @@
+<AspNetUsers>
+  <row>
+    <Id>6b634fc3-1c05-4491-a919-c9b6a7f3084b</Id>
+    <FirstName>Ahmed</FirstName>
+    <LastName>Hesham</LastName>
+    <TermsAndConditions>true</TermsAndConditions>
+    <UserName>AhmedHesham</UserName>
+    <NormalizedUserName>AHMEDHESHAM</NormalizedUserName>
+    <Email>ahmedh.emam99@gmail.com</Email>
+    <NormalizedEmail>AHMEDH.EMAM99@GMAIL.COM</NormalizedEmail>
+    <EmailConfirmed>false</EmailConfirmed>
+    <PasswordHash>AQAAAAIAAYagAAAAELtZq8/OPcWPYAwZDJk7oYMNrEAwDmVxVqVUxOpogQxgcNJQFUCdfCb27VI0sI5kgQ==</PasswordHash>
+    <SecurityStamp>BXQDGLDU6YLKU52FTGZ2NPI5LFRNDUJ7</SecurityStamp>
+    <ConcurrencyStamp>7d497249-7c74-4edd-a4fd-b2bc3e6ae95b</ConcurrencyStamp>
+    <PhoneNumberConfirmed>false</PhoneNumberConfirmed>
+    <TwoFactorEnabled>false</TwoFactorEnabled>
+    <LockoutEnabled>true</LockoutEnabled>
+    <AccessFailedCount>0</AccessFailedCount>
+  </row>
+</AspNetUsers>
