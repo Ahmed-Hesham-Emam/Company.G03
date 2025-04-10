@@ -7,7 +7,9 @@ using Company.G03.DAL.Entities;
 using Company.G03.PL.AutoMapper;
 using Company.G03.PL.Helpers.Email;
 using Company.G03.PL.Helpers.Permissions;
+using Company.G03.PL.Helpers.Roles;
 using Company.G03.PL.Helpers.SMS;
+using Company.G03.PL.Helpers.User;
 using Company.G03.PL.Services;
 using Company.G03.PL.Settings;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -174,13 +176,20 @@ namespace Company.G03.PL
 
             var app = builder.Build(); // Create an instance of the application
 
+            #region Data Seeders
             using (var scope = app.Services.CreateScope())
                 {
-                var services = scope.ServiceProvider;
-                var context = services.GetRequiredService<CompanyDbContext>();
-                await PermissionSeeder.SeedPermissionsAsync(context);
+                var services = scope.ServiceProvider; // Create a scope for the services
+                var context = services.GetRequiredService<CompanyDbContext>(); // Get the database context
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>(); // Get the RoleManager service
+
+
+                await PermissionSeeder.SeedPermissionsAsync(context); // Seed the permissions from the enum
+                await RoleSeeder.SeedAdminRoleAsync(context, roleManager); // Seed the admin role with permissions
+                await AdminUserSeeder.SeedAdminUserFromXmlAsync(services); // Seed the admin user from the XML file
                 }
 
+            #endregion
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

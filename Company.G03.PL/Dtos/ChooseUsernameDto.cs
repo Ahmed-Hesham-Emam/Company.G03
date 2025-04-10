@@ -7,7 +7,7 @@ namespace Company.G03.PL.Dtos
 
         public string UserId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Username is Required")]
         [Display(Name = "Username")]
         public string UserName { get; set; }
 

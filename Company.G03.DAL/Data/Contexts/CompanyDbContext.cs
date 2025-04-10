@@ -24,6 +24,9 @@ namespace Company.G03.DAL.Data.Contexts
                         .HasIndex(u => u.UserName)
                         .IsUnique(false);
 
+            modelBuilder.Entity<AppUser>()
+                        .HasIndex(u => u.NormalizedUserName)
+                        .IsUnique(false);
             }
 
         public DbSet<Department> Departments { get; set; }
