@@ -64,6 +64,7 @@ namespace Company.G03.PL.Controllers
 
                         if (result.Succeeded)
                             {
+                            await _userManager.AddToRoleAsync(User, "User");
                             return RedirectToAction("SignIn");
                             }
 
@@ -405,6 +406,8 @@ namespace Company.G03.PL.Controllers
                 }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
+
+
             if (isNewUser)
                 {
                 return RedirectToAction("ChooseUsername", new { userId = user.Id });
@@ -440,8 +443,17 @@ namespace Company.G03.PL.Controllers
 
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
-                return RedirectToAction("Index", "Home");
+                {
 
+                if (!await _userManager.IsInRoleAsync(user, "User"))
+                    {
+                    await _userManager.AddToRoleAsync(user, "User");
+                    await _signInManager.SignInAsync(user, isPersistent: false);  // Sign in with updated data
+                    }
+
+                await _signInManager.RefreshSignInAsync(user);
+                return RedirectToAction("Index", "Home");
+                }
             foreach (var error in result.Errors)
                 ModelState.AddModelError("", error.Description);
 

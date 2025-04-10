@@ -49,7 +49,6 @@ namespace Company.G03.PL
             #endregion
 
             #region AppUser
-
             builder.Services.Configure<IdentityOptions>(options =>
             {
                 options.User.RequireUniqueEmail = true;// Email will be unique
@@ -107,6 +106,7 @@ namespace Company.G03.PL
             {
                 options.LoginPath = "/Account/SignIn"; // Redirect to this path if the user is not authenticated
                 options.ExpireTimeSpan = TimeSpan.FromDays(1); // Set the expiration time for the authentication cookie
+                options.SlidingExpiration = true; // Enable sliding expiration
                 options.LogoutPath = "/Account/SignOut"; // Redirect to this path when the user logs out
                 options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to this path if access is denied
             }).AddGoogle(options =>
@@ -182,10 +182,11 @@ namespace Company.G03.PL
                 var services = scope.ServiceProvider; // Create a scope for the services
                 var context = services.GetRequiredService<CompanyDbContext>(); // Get the database context
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>(); // Get the RoleManager service
+                var userManager = services.GetRequiredService<UserManager<AppUser>>(); // Get the UserManager service
 
 
                 await PermissionSeeder.SeedPermissionsAsync(context); // Seed the permissions from the enum
-                await RoleSeeder.SeedAdminRoleAsync(context, roleManager); // Seed the admin role with permissions
+                await RoleSeeder.SeedRoleAsync(context, roleManager, userManager); // Seed the admin role with permissions
                 await AdminUserSeeder.SeedAdminUserFromXmlAsync(services); // Seed the admin user from the XML file
                 }
 
