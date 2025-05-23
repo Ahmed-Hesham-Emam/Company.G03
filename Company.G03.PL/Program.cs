@@ -34,7 +34,6 @@ namespace Company.G03.PL
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // Allowing the DI container to create the instance of UnitOfWork
             builder.Services.AddScoped<IPermissionRepository, PermissionRepository>(); // Allowing the DI container to create the instance of PermissionRepository
             builder.Services.AddScoped<IPermissionService, PermissionService>(); // Allowing the DI container to create the instance of PermissionService
-
             #endregion
 
             builder.Services.AddAutoMapper(typeof(EmployeeProfile)); // Registering the AutoMapper profile for mapping between DTOs and entities
@@ -186,7 +185,7 @@ namespace Company.G03.PL
             var app = builder.Build(); // Create an instance of the application
 
             #region Data Seeders
-            using (var scope = app.Services.CreateScope())
+            using ( var scope = app.Services.CreateScope() )
                 {
                 var services = scope.ServiceProvider; // Create a scope for the services
                 var context = services.GetRequiredService<CompanyDbContext>(); // Get the database context
@@ -202,7 +201,7 @@ namespace Company.G03.PL
             #endregion
 
             // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+            if ( !app.Environment.IsDevelopment() )
                 {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
