@@ -16,7 +16,7 @@
 
 <form class="my-3">
     <div class="d-flex align-items-center justify-content-start">
-        <input name="Search" id="searchInp" placeholder="Search by name" class="form-control w-50 me-3"/>
+        <input name="Search" id="searchInp" placeholder="Search by name" class="form-control bg-success-subtle w-50 me-3"/>
         <input type="submit" value="Search" class="btn btn-primary" />
     </div>
 </form>
@@ -30,7 +30,7 @@
     @if (Model.Count() > 0)
         {
         <div class="h-50">
-            <table class="table table-striped table-hover table-bordered rounded-3">
+            <table class="table table-striped table-success table-hover table-bordered rounded-3">
                 <thead class="bg-info text-center">
                     <tr>
                         <th>#</th>
@@ -74,7 +74,7 @@
                             <td>@employee.HiringDate</td>
                             <td>@employee.CreatedAt</td>
 
-                            @if (employee.Department != null)
+                            @if ( employee.Department != null )
                                 {
                                 <td>@employee.Department.Name</td>
                                 }

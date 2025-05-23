@@ -17,14 +17,14 @@
 <div class="modal fade" id="DeleteModal-@Model" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Department</h1>
+            <div class="modal-header bg-success-subtle">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Record</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body bg-success-subtle">
                 Are You Sure to Delete this Entry with Id: @Model?
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer bg-success-subtle">
                 <form asp-action="Delete" asp-route-id="@Model" class="mt-4">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <input type="submit" value="Delete" class="btn btn-danger" />

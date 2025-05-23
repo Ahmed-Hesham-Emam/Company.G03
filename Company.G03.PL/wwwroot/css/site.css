@@ -1,9 +1,30 @@
+:root {
+    --Main-color: #82BF76;
+    scrollbar-color: var(--Main-color) #f5f5f5;
+    scroll-behavior: smooth;
+    -ms-scrollbar-highlight-color: inherit;
+    scrollbar-highlight-color: inherit;
+}
+
 html {
   font-size: 14px;
 }
 
+body {
+    background-color: var(--Main-color);
+}
+
+
+.navbar {
+    border-color: var(--Main-color) !important;
+}
+
+.footer {
+    border-color: gray !important;
+}
+
 @media (min-width: 768px) {
-  html {
+    html {
     font-size: 16px;
   }
 }
@@ -20,3 +41,4 @@ html {
 body {
   margin-bottom: 60px;
 }
+

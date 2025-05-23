@@ -40,14 +40,14 @@ namespace Company.G03.PL.Controllers
         [HttpPost]
         public async Task<IActionResult> SignUp(SignUpDto model)
             {
-            if (ModelState.IsValid)
+            if ( ModelState.IsValid )
                 {
                 var User = await _userManager.FindByNameAsync(model.UserName);
-                if (User is null)
+                if ( User is null )
                     {
 
                     User = await _userManager.FindByEmailAsync(model.Email);
-                    if (User is null)
+                    if ( User is null )
                         {
 
                         User = new AppUser()
@@ -62,13 +62,13 @@ namespace Company.G03.PL.Controllers
 
                         var result = await _userManager.CreateAsync(User, model.Password);
 
-                        if (result.Succeeded)
+                        if ( result.Succeeded )
                             {
                             await _userManager.AddToRoleAsync(User, "User");
                             return RedirectToAction("SignIn");
                             }
 
-                        foreach (var error in result.Errors)
+                        foreach ( var error in result.Errors )
                             {
                             ModelState.AddModelError("", error.Description);
                             }
@@ -98,13 +98,13 @@ namespace Company.G03.PL.Controllers
         [HttpPost]
         public async Task<IActionResult> SignIn(SignInDto model)
             {
-            if (ModelState.IsValid)
+            if ( ModelState.IsValid )
                 {
                 var User = await _userManager.FindByEmailAsync(model.Email);
 
-                if (User is not null)
+                if ( User is not null )
                     {
-                    if (await _userManager.IsLockedOutAsync(User))
+                    if ( await _userManager.IsLockedOutAsync(User) )
                         {
                         var Lockout = await _userManager.GetLockoutEnabledAsync(User);
                         ModelState.AddModelError("", $"Your account is locked out for {Lockout}, please try again later.");
@@ -113,10 +113,10 @@ namespace Company.G03.PL.Controllers
                         }
                     var flag = await _userManager.CheckPasswordAsync(User, model.Password);
 
-                    if (flag)
+                    if ( flag )
                         {
                         var resualt = await _signInManager.PasswordSignInAsync(User, model.Password, model.RememberMe, false);
-                        if (resualt.Succeeded)
+                        if ( resualt.Succeeded )
                             {
                             return RedirectToAction("Index", "Home");
                             }
@@ -155,11 +155,11 @@ namespace Company.G03.PL.Controllers
         [HttpPost]
         public async Task<IActionResult> SendResetPasswordUrl(ForgotPasswordDto model)
             {
-            if (ModelState.IsValid)
+            if ( ModelState.IsValid )
                 {
                 var user = await _userManager.FindByEmailAsync(model.Email);
 
-                if (user is not null)
+                if ( user is not null )
                     {
                     // Token Generation
                     var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -194,11 +194,11 @@ namespace Company.G03.PL.Controllers
         [HttpPost]
         public async Task<IActionResult> SendResetPasswordUrlSms(ForgotPasswordDto model)
             {
-            if (ModelState.IsValid)
+            if ( ModelState.IsValid )
                 {
                 var user = await _userManager.FindByEmailAsync(model.Email);
 
-                if (user is not null)
+                if ( user is not null )
                     {
                     // Token Generation
                     var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -250,22 +250,23 @@ namespace Company.G03.PL.Controllers
         public async Task<IActionResult> ResetPassword(ResetPasswordDto model)
             {
 
-            if (ModelState.IsValid)
+            if ( ModelState.IsValid )
                 {
                 var email = TempData["Email"] as string;
                 var token = TempData["Token"] as string;
 
-                if (email is null || token is null)
+                if ( email is null || token is null )
                     {
                     return BadRequest("WHO ARE YOU?! (╯°□°）╯︵ ┻━┻");
                     }
 
                 var user = await _userManager.FindByEmailAsync(email);
 
-                if (user is not null)
+
+                if ( user is not null )
                     {
                     var res = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
-                    if (res.Succeeded)
+                    if ( res.Succeeded )
                         {
                         return RedirectToAction("SignIn");
                         }
@@ -319,7 +320,7 @@ namespace Company.G03.PL.Controllers
 
             bool isNewUser = false;
 
-            if (user == null)
+            if ( user == null )
                 {
                 user = new AppUser
                     {
@@ -331,7 +332,7 @@ namespace Company.G03.PL.Controllers
                     TermsAndConditions = true,
                     };
                 var newResualt = await _userManager.CreateAsync(user);
-                if (!newResualt.Succeeded)
+                if ( !newResualt.Succeeded )
                     {
                     ModelState.AddModelError("", "Invalid Register Data!");
                     return View("SignUp");
@@ -341,7 +342,7 @@ namespace Company.G03.PL.Controllers
                 }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
-            if (isNewUser)
+            if ( isNewUser )
                 {
                 return RedirectToAction("ChooseUsername", new { userId = user.Id });
                 }
@@ -384,7 +385,7 @@ namespace Company.G03.PL.Controllers
 
             bool isNewUser = false;
 
-            if (user == null)
+            if ( user == null )
                 {
                 user = new AppUser
                     {
@@ -396,7 +397,7 @@ namespace Company.G03.PL.Controllers
                     TermsAndConditions = true
                     };
                 var newResualt = await _userManager.CreateAsync(user);
-                if (!newResualt.Succeeded)
+                if ( !newResualt.Succeeded )
                     {
                     ModelState.AddModelError("", "Invalid Register Data!");
                     return View("SignUp");
@@ -408,7 +409,7 @@ namespace Company.G03.PL.Controllers
             await _signInManager.SignInAsync(user, isPersistent: false);
 
 
-            if (isNewUser)
+            if ( isNewUser )
                 {
                 return RedirectToAction("ChooseUsername", new { userId = user.Id });
                 }
@@ -418,13 +419,13 @@ namespace Company.G03.PL.Controllers
 
         #endregion
 
-        #region Create Username and password after etxternal login for the first time
+        #region Create Username after etxternal login for the first time
 
         [HttpGet]
         public async Task<IActionResult> ChooseUsername(string userId)
             {
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null) return NotFound();
+            if ( user == null ) return NotFound();
 
             return View(new ChooseUsernameDto { UserId = userId });
             }
@@ -433,19 +434,19 @@ namespace Company.G03.PL.Controllers
         [HttpPost]
         public async Task<IActionResult> ChooseUsername(ChooseUsernameDto model)
             {
-            if (!ModelState.IsValid) return View(model);
+            if ( !ModelState.IsValid ) return View(model);
 
             var user = await _userManager.FindByIdAsync(model.UserId);
-            if (user == null) return NotFound();
+            if ( user == null ) return NotFound();
 
             user.UserName = model.UserName;
 
 
             var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
+            if ( result.Succeeded )
                 {
 
-                if (!await _userManager.IsInRoleAsync(user, "User"))
+                if ( !await _userManager.IsInRoleAsync(user, "User") )
                     {
                     await _userManager.AddToRoleAsync(user, "User");
                     await _signInManager.SignInAsync(user, isPersistent: false);
@@ -454,7 +455,7 @@ namespace Company.G03.PL.Controllers
                 await _signInManager.RefreshSignInAsync(user);
                 return RedirectToAction("Index", "Home");
                 }
-            foreach (var error in result.Errors)
+            foreach ( var error in result.Errors )
                 ModelState.AddModelError("", error.Description);
 
             return View(model);
